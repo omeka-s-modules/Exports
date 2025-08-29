@@ -1,0 +1,58 @@
+<?php
+$job = $export->job();
+$owner = $export->owner();
+?>
+
+<h3><?php echo $this->escapeHtml($export->label()); ?></h3>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Label'); ?></h4>
+    <div class="value"><?php echo $export->label(); ?></div>
+</div>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Type'); ?></h4>
+    <div class="value"><?php echo $export->typeLabel(); ?></div>
+</div>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Export job'); ?></h4>
+    <?php if ($job): ?>
+    <div class="value"><?php
+        echo sprintf(
+            $this->translate('Status: %s [%s]'),
+            $job->link($job->statusLabel()),
+            $job->log()
+                ? $this->hyperlink($this->translate('view log'), $this->url('admin/id', ['controller' => 'job', 'action' => 'log', 'id' => $job->id()]), ['target' => '_blank'])
+                : $this->translate('no log')
+        ); ?></div>
+    <div class="value"><?php echo sprintf($this->translate('Started: %s'), $this->i18n()->dateFormat($job->started(), 'medium', 'medium')); ?></div>
+    <div class="value"><?php echo sprintf($this->translate('Ended: %s'), $this->i18n()->dateFormat($job->ended(), 'medium', 'medium')); ?></div>
+    <?php else: ?>
+    <div class="value"><?php echo $this->translate('Unknown'); ?></div>
+    <?php endif; ?>
+</div>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Owner'); ?></h4>
+    <div class="value"><?php echo $owner ? $owner->link($owner->name()) : ''; ?></div>
+</div>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Created'); ?></h4>
+    <div class="value"><?php echo $this->i18n()->dateFormat($export->created(), 'medium', 'medium'); ?></div>
+</div>
+
+<?php if ($export->downloadAvailable()): ?>
+<div class="meta-group">
+    <h4><?php echo $this->translate('Download'); ?></h4>
+    <div class="value"><a href="<?php echo $this->escapeHtml($export->downloadUrl()); ?>"><?php echo sprintf('%s.zip', $export->name()); ?></a></div>
+</div>
+<?php endif; ?>
+
+<div class="meta-group">
+    <h4><?php echo $this->translate('Data'); ?></h4>
+    <div class="value">
+        <pre style="font-size: 12px;"><?php echo json_encode($export->data(), JSON_PRETTY_PRINT) ?></pre>
+    </div>
+</div>
