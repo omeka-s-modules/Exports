@@ -185,7 +185,7 @@ class ResourcesCsv implements ExportTypeInterface
             foreach ($v as $value) {
                 $valueData = $this->getPropertyValueData($value);
                 if (is_array($valueData)) {
-                    $fieldData[sprintf('%s_%s', $k, $valueData[0])][] = $valueData[1];
+                    $fieldData[sprintf('%s:%s', $k, $valueData[0])][] = $valueData[1];
                 }
             }
             return array_map(
