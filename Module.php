@@ -69,21 +69,35 @@ SQL;
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
         /*
-         * Dispatch the export job after the export is created.
+         * Dispatch the export job and set the export name after the export is created.
          */
         $sharedEventManager->attach(
             ExportAdapter::class,
             'api.create.post',
             function (Event $event) {
                 $services = $this->getServiceLocator();
+                $dispatcher = $services->get('Omeka\Job\Dispatcher');
+                $entityManager = $services->get('Omeka\EntityManager');
                 $exportEntity = $event->getParam('response')->getContent();
-                $job = $services
-                    ->get('Omeka\Job\Dispatcher')
-                    ->dispatch(ExportJob::class, ['export_id' => $exportEntity->getId()]);
-                // Set the job and the export name to the export entity.
-                $exportEntity->setJob($job);
-                $exportEntity->setName(sprintf('%s_%s', $exportEntity->getType(), $job->getStarted()->format('U')));
-                $services->get('Omeka\EntityManager')->flush();
+
+                $exportJob = $dispatcher->dispatch(
+                    ExportJob::class,
+                    ['export_id' => $exportEntity->getId()]
+                );
+                // The export name is a concatenation of the export type, the
+                // timestamp when the job was started (to ensure uniqueness and
+                // consistent file sorting), and a random string (to further
+                // ensure uniqueness).
+                $exportName = sprintf(
+                    '%s_%s_%s',
+                    $exportEntity->getType(),
+                    $exportJob->getStarted()->format('U'),
+                    substr(md5(rand()), 0, 4)
+                );
+
+                $exportEntity->setJob($exportJob);
+                $exportEntity->setName($exportName);
+                $entityManager->flush();
             }
         );
     }
