@@ -183,9 +183,11 @@ class ResourcesCsv implements ExportTypeInterface
         if ($this->isPropertyValues($v)) {
             $fieldData = [];
             foreach ($v as $value) {
-                $valueData = $this->getPropertyValueData($value);
+                $valueData = $this->getValueData($value, $multivalueSeparator);
                 if (is_array($valueData)) {
-                    $fieldData[sprintf('%s:%s', $k, $valueData[0])][] = $valueData[1];
+                    foreach ($valueData as $value) {
+                        $fieldData[sprintf('%s:%s', $k, $value[0])][] = $value[1];
+                    }
                 }
             }
             return array_map(
@@ -247,17 +249,35 @@ class ResourcesCsv implements ExportTypeInterface
     /**
      * Get property value data from a JSON-LD property value.
      */
-    public function getPropertyValueData(array $v): ?array
+    public function getValueData(array $v, string $multivalueSeparator): ?array
     {
+        $valueData = [];
         if (isset($v['@value'])) {
-            return ['literal', $v['@value']];
+            $valueData[] = ['literal', $v['@value']];
+        } elseif (isset($v['value_resource_id'])) {
+            $valueData[] = ['resource', $v['value_resource_id']];
+        } elseif (isset($v['@id'])) {
+            $valueData[] = ['uri', $v['@id']];
         }
-        if (isset($v['value_resource_id'])) {
-            return ['resource', $v['value_resource_id']];
+        if (isset($v['@annotation']) && is_array($v['@annotation'])) {
+            $allAnnotationValueData = [];
+            foreach ($v['@annotation'] as $term => $annotationValues) {
+                if ($this->isPropertyValues($annotationValues)) {
+                    foreach ($annotationValues as $annotationValue) {
+                        $annotationValueData = $this->getValueData($annotationValue, $multivalueSeparator);
+                        if (is_array($annotationValueData)) {
+                            $allAnnotationValueData[sprintf('annotation %s:%s', $term, $annotationValueData[0][0])][] = $annotationValueData[0][1];
+                        }
+                    }
+                }
+            }
+            $allAnnotationValueData = array_map(
+                fn($k, $v) => [$k, implode($multivalueSeparator, $v)],
+                array_keys($allAnnotationValueData),
+                array_values($allAnnotationValueData)
+            );
+            $valueData = array_merge($valueData, $allAnnotationValueData);
         }
-        if (isset($v['@id'])) {
-            return ['uri', $v['@id']];
-        }
-        return null;
+        return $valueData ?: null;
     }
 }
