@@ -182,8 +182,8 @@ class ResourcesCsv implements ExportTypeInterface
         }
         if ($this->isPropertyValues($v)) {
             $fieldData = [];
-            foreach ($v as $value) {
-                $valueData = $this->getValueData($value, $multivalueSeparator);
+            foreach ($v as $index => $value) {
+                $valueData = $this->getValueData($index, $value, $multivalueSeparator);
                 if (is_array($valueData)) {
                     foreach ($valueData as $value) {
                         $fieldData[sprintf('%s:%s', $k, $value[0])][] = $value[1];
@@ -248,25 +248,44 @@ class ResourcesCsv implements ExportTypeInterface
 
     /**
      * Get property value data from a JSON-LD property value.
+     *
+     * @param ?int $index The index of the property value in the JSON-LD property values array
+     * @param array $v An individual JSON-LD property value
+     * @param string $multivalueSeparator The character to separate multiple values in a cell
+     * @return ?array An array of CSV header_suffix-value pairs
      */
-    public function getValueData(array $v, string $multivalueSeparator): ?array
+    public function getValueData(?int $index, array $v, string $multivalueSeparator): ?array
     {
         $valueData = [];
         if (isset($v['@value'])) {
-            $valueData[] = ['literal', $v['@value']];
+            $headerSuffix = 'literal';
+            $valueData[] = [$headerSuffix, $v['@value']];
         } elseif (isset($v['value_resource_id'])) {
-            $valueData[] = ['resource', $v['value_resource_id']];
+            $headerSuffix = 'resource';
+            $valueData[] = [$headerSuffix, $v['value_resource_id']];
         } elseif (isset($v['@id'])) {
-            $valueData[] = ['uri', $v['@id']];
+            $headerSuffix = 'uri';
+            $valueData[] = [$headerSuffix, $v['@id']];
+        } else {
+            // Invalid or unrecognized JSON-LD value.
+            return null;
         }
+
+        // Add annotation data, if any, to the value data.
         if (isset($v['@annotation']) && is_array($v['@annotation'])) {
             $allAnnotationValueData = [];
             foreach ($v['@annotation'] as $term => $annotationValues) {
                 if ($this->isPropertyValues($annotationValues)) {
                     foreach ($annotationValues as $annotationValue) {
-                        $annotationValueData = $this->getValueData($annotationValue, $multivalueSeparator);
+                        $annotationValueData = $this->getValueData(null, $annotationValue, $multivalueSeparator);
                         if (is_array($annotationValueData)) {
-                            $allAnnotationValueData[sprintf('annotation %s:%s', $term, $annotationValueData[0][0])][] = $annotationValueData[0][1];
+                            // The annotation's header suffix is a union of the
+                            // value's header suffix, the index of JSON-LD value,
+                            // the annotation's property term, and the annotation's
+                            // data type. This prevents ambiguity in the relationship
+                            // between the annotation and its associated value.
+                            $headerAnnotationSuffix = sprintf('%s %s %s:%s', $headerSuffix, $index, $term, $annotationValueData[0][0]);
+                            $allAnnotationValueData[$headerAnnotationSuffix][] = $annotationValueData[0][1];
                         }
                     }
                 }
@@ -278,6 +297,7 @@ class ResourcesCsv implements ExportTypeInterface
             );
             $valueData = array_merge($valueData, $allAnnotationValueData);
         }
-        return $valueData ?: null;
+
+        return $valueData;
     }
 }

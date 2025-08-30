@@ -84,10 +84,10 @@ SQL;
                     ExportJob::class,
                     ['export_id' => $exportEntity->getId()]
                 );
-                // The export name is a concatenation of the export type, the
-                // timestamp when the job was started (to ensure uniqueness and
-                // consistent file sorting), and a random string (to further
-                // ensure uniqueness).
+                // The export name is a union of the export type, the timestamp
+                // when the job was started (to ensure uniqueness and consistent
+                // file sorting), and a random string (to further ensure
+                // uniqueness).
                 $exportName = sprintf(
                     '%s_%s_%s',
                     $exportEntity->getType(),
