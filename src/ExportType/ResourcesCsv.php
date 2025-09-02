@@ -1,8 +1,10 @@
 <?php
 namespace Exports\ExportType;
 
+use ArrayObject;
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
+use Laminas\EventManager\EventManager;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Omeka\Api\Manager as ApiManager;
@@ -11,9 +13,12 @@ class ResourcesCsv implements ExportTypeInterface
 {
     protected $apiManager;
 
-    public function __construct(ApiManager $apiManager)
+    protected $eventManager;
+
+    public function __construct(ApiManager $apiManager, EventManager $eventManager)
     {
         $this->apiManager = $apiManager;
+        $this->eventManager = $eventManager;
     }
 
     public function getLabel(): string
@@ -94,7 +99,7 @@ class ResourcesCsv implements ExportTypeInterface
                 $resource = $this->apiManager->read($resourceName, $resourceId)->getContent();
                 $resourceJson = json_decode(json_encode($resource), true);
                 foreach ($resourceJson as $k => $v) {
-                    $fieldData = $this->getFieldData($k, $v, $export->dataValue('multivalue_separator'));
+                    $fieldData = $this->getFieldData($k, $v, $export);
                     if (is_array($fieldData)) {
                         foreach ($fieldData as $data) {
                             $headerRow[$data[0]] = $data[0];
@@ -118,7 +123,7 @@ class ResourcesCsv implements ExportTypeInterface
                 $resourceJson = json_decode(json_encode($resource), true);
                 $resourceRow = $rowTemplate;
                 foreach ($resourceJson as $k => $v) {
-                    $fieldData = $this->getFieldData($k, $v, $export->dataValue('multivalue_separator'));
+                    $fieldData = $this->getFieldData($k, $v, $export);
                     if (is_array($fieldData)) {
                         foreach ($fieldData as $data) {
                             if (array_key_exists($data[0], $resourceRow)) {
@@ -142,8 +147,10 @@ class ResourcesCsv implements ExportTypeInterface
      * Determines whether to keep the key-value pair and returns an array of
      * corresponding CSV header-field pairs.
      */
-    public function getFieldData(string $k, $v, string $multivalueSeparator): ?array
+    public function getFieldData(string $k, $v, ExportRepresentation $export): ?array
     {
+        $multivalueSeparator = $export->dataValue('multivalue_separator');
+
         // First, skip unneeded and empty fields.
         if (in_array($k, ['@context', '@id'])) {
             return null;
@@ -174,8 +181,8 @@ class ResourcesCsv implements ExportTypeInterface
         if ($this->isInternalLink($v)) {
             return [[$k, $v['o:id']]];
         }
-        if (is_array($v) && 0 < count($v) && $this->isInternalLink($v[0])) {
-            return [[$k, implode($multivalueSeparator, array_map(fn($link) => $link['o:id'], $v))]];
+        if (is_array($v) && 0 < count($v) && $this->isInternalLink(reset($v))) {
+            return [[$k, implode($multivalueSeparator, array_map(fn ($link) => $link['o:id'], $v))]];
         }
         if ($this->isDate($v)) {
             return [[$k, $v['@value']]];
@@ -183,7 +190,7 @@ class ResourcesCsv implements ExportTypeInterface
         if ($this->isPropertyValues($v)) {
             $fieldData = [];
             foreach ($v as $index => $value) {
-                $valueData = $this->getValueData($index, $value, $multivalueSeparator);
+                $valueData = $this->getValueData($index, $value, $export);
                 if (is_array($valueData)) {
                     foreach ($valueData as $value) {
                         $fieldData[sprintf('%s:%s', $k, $value[0])][] = $value[1];
@@ -191,10 +198,29 @@ class ResourcesCsv implements ExportTypeInterface
                 }
             }
             return array_map(
-                fn($k, $v) => [$k, implode($multivalueSeparator, $v)],
+                fn ($k, $v) => [$k, implode($multivalueSeparator, $v)],
                 array_keys($fieldData),
                 array_values($fieldData)
             );
+        }
+
+        // Next, let modules return CSV field data. Modules should add field
+        // data, if any, to the "field_data" param's ArrayObject.
+        $fieldData = new ArrayObject;
+        $eventParams = [
+            'k' => $k,
+            'v' => $v,
+            'export' => $export,
+            'field_data' => $fieldData,
+        ];
+        $event = new \Laminas\EventManager\Event(
+            'exports.resources_csv.get_field_data',
+            $this,
+            $eventParams
+        );
+        $this->eventManager->triggerEvent($event);
+        if ($fieldData->count()) {
+            return $fieldData->getArrayCopy();
         }
 
         // Next, handle the remaining scalar fields.
@@ -241,8 +267,8 @@ class ResourcesCsv implements ExportTypeInterface
         return (
             is_array($v)
             && 0 < count($v)
-            && is_array($v[0])
-            && isset($v[0]['property_id'])
+            && is_array(reset($v))
+            && isset(reset($v)['property_id'])
         );
     }
 
@@ -251,10 +277,10 @@ class ResourcesCsv implements ExportTypeInterface
      *
      * @param ?int $index The index of the property value in the JSON-LD property values array
      * @param array $v An individual JSON-LD property value
-     * @param string $multivalueSeparator The character to separate multiple values in a cell
+     * @param ExportRepresentation $export The export representation
      * @return ?array An array of CSV header_suffix-value pairs
      */
-    public function getValueData(?int $index, array $v, string $multivalueSeparator): ?array
+    public function getValueData(?int $index, array $v, ExportRepresentation $export): ?array
     {
         $valueData = [];
         if (isset($v['@value'])) {
@@ -277,7 +303,7 @@ class ResourcesCsv implements ExportTypeInterface
             foreach ($v['@annotation'] as $term => $annotationValues) {
                 if ($this->isPropertyValues($annotationValues)) {
                     foreach ($annotationValues as $annotationValue) {
-                        $annotationValueData = $this->getValueData(null, $annotationValue, $multivalueSeparator);
+                        $annotationValueData = $this->getValueData(null, $annotationValue, $export);
                         if (is_array($annotationValueData)) {
                             // The annotation's header suffix is a union of the
                             // value's header suffix, the index of JSON-LD value,
@@ -291,7 +317,7 @@ class ResourcesCsv implements ExportTypeInterface
                 }
             }
             $allAnnotationValueData = array_map(
-                fn($k, $v) => [$k, implode($multivalueSeparator, $v)],
+                fn ($k, $v) => [$k, implode($export->dataValue('multivalue_separator'), $v)],
                 array_keys($allAnnotationValueData),
                 array_values($allAnnotationValueData)
             );

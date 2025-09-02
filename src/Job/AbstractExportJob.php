@@ -25,6 +25,11 @@ abstract class AbstractExportJob extends AbstractJob
     protected $export;
 
     /**
+     * @var ExportTypeInterface
+     */
+    protected $exportType;
+
+    /**
      * Get a named service. Proxy to $this->getServiceLocator().
      */
     public function get(string $serviceName)
