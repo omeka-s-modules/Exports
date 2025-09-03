@@ -11,7 +11,7 @@ class IndexControllerFactory implements FactoryInterface
     {
         return new IndexController(
             $services->get('Omeka\EntityManager'),
-            $services->get('Exports\ExportTypeManager'),
+            $services->get('Exports\ExporterManager'),
         );
     }
 }

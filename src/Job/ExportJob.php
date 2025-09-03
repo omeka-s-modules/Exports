@@ -23,9 +23,9 @@ class ExportJob extends AbstractExportJob
         // First make the export directory.
         $this->makeDirectory('');
 
-        // Delegate the export to the export type, which is responsibe for
-        // building the export assets within the export directory.
-        $this->getExportType()->export($export, $this);
+        // Delegate the export to the exporter, which is responsible for building
+        // the export assets within the export directory.
+        $this->getExporter()->export($export, $this);
 
         // Create the export ZIP file.
         $this->createExportZip();

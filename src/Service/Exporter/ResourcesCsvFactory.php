@@ -1,9 +1,9 @@
 <?php
-namespace Exports\Service\ExportType;
+namespace Exports\Service\Exporter;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Exports\ExportType\ResourcesCsv;
+use Exports\Exporter\ResourcesCsv;
 
 class ResourcesCsvFactory implements FactoryInterface
 {

@@ -5,9 +5,9 @@ use Laminas\Router\Http;
 
 return [
     'exports_module' => [
-        'export_types' => [
+        'exporters' => [
             'factories' => [
-                'resources_csv' => Service\ExportType\ResourcesCsvFactory::class,
+                'resources_csv' => Service\Exporter\ResourcesCsvFactory::class,
             ],
         ],
     ],
@@ -35,7 +35,7 @@ return [
     ],
     'service_manager' => [
         'factories' => [
-            'Exports\ExportTypeManager' => Service\ExportType\ExportTypeManagerFactory::class,
+            'Exports\ExporterManager' => Service\Exporter\ExporterManagerFactory::class,
         ],
     ],
     'api_adapters' => [
@@ -50,7 +50,7 @@ return [
     ],
     'form_elements' => [
         'factories' => [
-            'Exports\Form\ExportTypeForm' => Service\Form\ExportTypeFormFactory::class,
+            'Exports\Form\ExporterForm' => Service\Form\ExporterFormFactory::class,
             'Exports\Form\ExportForm' => Service\Form\ExportFormFactory::class,
         ],
     ],

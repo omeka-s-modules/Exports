@@ -18,7 +18,7 @@ class ExportRepresentation extends AbstractEntityRepresentation
             'o:owner' => $owner ? $owner->getReference() : null,
             'o:job' => $job ? $job->getReference() : null,
             'o:created' => $this->getDateTime($this->created()),
-            'o-module-exports:export_type' => $this->type(),
+            'o-module-exports:exporter_name' => $this->exporterName(),
             'o:name' => $this->name(),
             'o:label' => $this->label(),
             'o:data' => $this->data(),
@@ -53,15 +53,15 @@ class ExportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getCreated();
     }
 
-    public function type()
+    public function exporterName()
     {
-        return $this->resource->getType();
+        return $this->resource->getExporterName();
     }
 
-    public function typeLabel()
+    public function exporterLabel()
     {
-        $exportTypeManager = $this->getServiceLocator()->get('Exports\ExportTypeManager');
-        return $exportTypeManager->get($this->resource->getType())->getLabel();
+        $exporterManager = $this->getServiceLocator()->get('Exports\ExporterManager');
+        return $exporterManager->get($this->resource->getExporterName())->getLabel();
     }
 
     public function name()

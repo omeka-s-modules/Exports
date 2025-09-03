@@ -1,35 +1,35 @@
 <?php
 namespace Exports\Form;
 
-use Exports\ExportType\Manager;
+use Exports\Exporter\Manager;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Laminas\Form\Form;
 
 class ExportForm extends Form
 {
-    protected $exportTypeManager;
+    protected $exporterManager;
 
-    public function setExportTypeManager(Manager $exportTypeManager)
+    public function setExporterManager(Manager $exporterManager)
     {
-        $this->exportTypeManager = $exportTypeManager;
+        $this->exporterManager = $exporterManager;
     }
 
     public function init()
     {
-        $exportTypeName = $this->getOption('export_type_name');
-        $exportType = $this->exportTypeManager->get($exportTypeName);
+        $exporterName = $this->getOption('exporter_name');
+        $exporter = $this->exporterManager->get($exporterName);
 
         $this->add([
             'type' => Element\Text::class,
-            'name' => 'export_type',
+            'name' => 'exporter',
             'options' => [
-                'label' => 'Export type', // @translate
+                'label' => 'Exporter', // @translate
             ],
             'attributes' => [
-                'id' => 'export_type',
+                'id' => 'exporter',
                 'disabled' => true,
-                'value' => $exportType->getLabel(),
+                'value' => $exporter->getLabel(),
             ],
         ]);
         $this->add([
@@ -45,13 +45,13 @@ class ExportForm extends Form
         ]);
         $this->add([
             'type' => Element\Hidden::class,
-            'name' => 'o-module-exports:export_type',
+            'name' => 'o-module-exports:exporter_name',
             'options' => [
-                'label' => 'Export type', // @translate
+                'label' => 'Exporter', // @translate
             ],
             'attributes' => [
-                'id' => 'o-module-exports:export_type',
-                'value' => $exportTypeName,
+                'id' => 'o-module-exports:exporter_name',
+                'value' => $exporterName,
             ],
         ]);
         $this->add([
@@ -61,7 +61,7 @@ class ExportForm extends Form
                 'id' => 'o-module-exports:export_data',
             ],
         ]);
-        $exportType->addElements(
+        $exporter->addElements(
             $this->get('o-module-exports:export_data')
         );
 

@@ -79,16 +79,16 @@ class ExportsExport extends AbstractEntity
      *     nullable=false
      * )
      */
-    protected $type;
+    protected $exporterName;
 
-    public function setType(string $type): void
+    public function setExporterName(string $exporterName): void
     {
-        $this->type = $type;
+        $this->exporterName = $exporterName;
     }
 
-    public function getType(): string
+    public function getExporterName(): string
     {
-        return $this->type;
+        return $this->exporterName;
     }
 
     /**

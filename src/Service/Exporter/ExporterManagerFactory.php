@@ -1,15 +1,15 @@
 <?php
-namespace Exports\Service\ExportType;
+namespace Exports\Service\Exporter;
 
-use Exports\ExportType\Manager;
+use Exports\Exporter\Manager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 
-class ExportTypeManagerFactory implements FactoryInterface
+class ExporterManagerFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
         $config = $services->get('Config');
-        return new Manager($services, $config['exports_module']['export_types']);
+        return new Manager($services, $config['exports_module']['exporters']);
     }
 }

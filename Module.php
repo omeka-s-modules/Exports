@@ -21,7 +21,7 @@ class Module extends AbstractModule
     public function install(ServiceLocatorInterface $services)
     {
         $sql = <<<'SQL'
-CREATE TABLE exports_export (id INT UNSIGNED AUTO_INCREMENT NOT NULL, owner_id INT DEFAULT NULL, job_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, name VARCHAR(255) DEFAULT NULL, `label` VARCHAR(255) NOT NULL, data LONGTEXT NOT NULL COMMENT '(DC2Type:json)', created DATETIME NOT NULL, INDEX IDX_85ABAB067E3C61F9 (owner_id), INDEX IDX_85ABAB06BE04EA9 (job_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+CREATE TABLE exports_export (id INT UNSIGNED AUTO_INCREMENT NOT NULL, owner_id INT DEFAULT NULL, job_id INT DEFAULT NULL, exporter_name VARCHAR(255) NOT NULL, name VARCHAR(255) DEFAULT NULL, `label` VARCHAR(255) NOT NULL, data LONGTEXT NOT NULL COMMENT '(DC2Type:json)', created DATETIME NOT NULL, INDEX IDX_85ABAB067E3C61F9 (owner_id), INDEX IDX_85ABAB06BE04EA9 (job_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
 ALTER TABLE exports_export ADD CONSTRAINT FK_85ABAB067E3C61F9 FOREIGN KEY (owner_id) REFERENCES user (id) ON DELETE SET NULL;
 ALTER TABLE exports_export ADD CONSTRAINT FK_85ABAB06BE04EA9 FOREIGN KEY (job_id) REFERENCES job (id) ON DELETE SET NULL;
 SQL;
@@ -84,13 +84,12 @@ SQL;
                     ExportJob::class,
                     ['export_id' => $exportEntity->getId()]
                 );
-                // The export name is a union of the export type, the timestamp
+                // The export name is a union of the exporter name, the timestamp
                 // when the job was started (to ensure uniqueness and consistent
-                // file sorting), and a random string (to further ensure
-                // uniqueness).
+                // file sorting), and a random string (to further ensure uniqueness).
                 $exportName = sprintf(
                     '%s_%s_%s',
-                    $exportEntity->getType(),
+                    $exportEntity->getExporterName(),
                     $exportJob->getStarted()->format('U'),
                     substr(md5(rand()), 0, 4)
                 );

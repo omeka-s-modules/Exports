@@ -1,11 +1,11 @@
 <?php
-namespace Exports\ExportType;
+namespace Exports\Exporter;
 
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\Form\Fieldset;
 
-class Unknown implements ExportTypeInterface
+class Unknown implements ExporterInterface
 {
     protected $name;
 

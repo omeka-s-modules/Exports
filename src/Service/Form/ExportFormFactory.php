@@ -10,7 +10,7 @@ class ExportFormFactory implements FactoryInterface
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
         $form = new ExportForm(null, $options ?? []);
-        $form->setExportTypeManager($services->get('Exports\ExportTypeManager'));
+        $form->setExporterManager($services->get('Exports\ExporterManager'));
         return $form;
     }
 }

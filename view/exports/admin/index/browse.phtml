@@ -12,7 +12,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
 
 <div id="page-actions">
     <?php if ($canExport): ?>
-    <?php echo $this->hyperlink($this->translate('Create an export'), $this->url(null, ['action' => 'add-export-type', 'id' => null,], true), ['class' => 'button']); ?>
+    <?php echo $this->hyperlink($this->translate('Create an export'), $this->url(null, ['action' => 'set-exporter', 'id' => null,], true), ['class' => 'button']); ?>
     <?php endif; ?>
 </div>
 
@@ -28,8 +28,8 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
         'value' => 'label',
     ],
     [
-        'label' => $this->translate('Type'),
-        'value' => 'type',
+        'label' => $this->translate('Exporter'),
+        'value' => 'exporter_name',
     ],
 ]); ?>
 </div>
@@ -40,7 +40,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
     <thead>
         <tr>
             <th><?php echo $this->translate('Label'); ?></th>
-            <th><?php echo $this->translate('Type'); ?></th>
+            <th><?php echo $this->translate('Exporter'); ?></th>
             <th><?php echo $this->translate('Status'); ?></th>
             <th><?php echo $this->translate('Owner'); ?></th>
             <th><?php echo $this->translate('Created'); ?></th>
@@ -54,7 +54,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
     $reExportUrl = $this->url(
         null,
         ['action' => 'export', 'id' => $export->id()],
-        ['query' => ['export_type_name' => $export->type()]],
+        ['query' => ['exporter_name' => $export->exporterName()]],
         true
     );
     ?>
@@ -86,7 +86,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
                     ]); ?></li>
                 </ul>
             </td>
-            <td><?php echo $export->typeLabel() ?></td>
+            <td><?php echo $export->exporterLabel() ?></td>
             <td><?php echo $job ? $job->link($job->statusLabel()) : $this->translate('Unknown'); ?></td>
             <td><?php echo $owner ? $owner->link($owner->name()) : ''; ?></td>
             <td><?php echo $this->i18n()->dateFormat($export->created()); ?></td>
@@ -103,7 +103,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
 <div class="no-resources">
     <p><?php echo sprintf(
         $this->translate('No exports found. %s'),
-        $canExport ? $this->hyperlink($this->translate('Create a new export.'), $this->url(null, ['action' => 'add-export-type'], true)) : ''
+        $canExport ? $this->hyperlink($this->translate('Create a new export.'), $this->url(null, ['action' => 'set-exporter'], true)) : ''
     ); ?></p>
 </div>
 <?php endif; ?>

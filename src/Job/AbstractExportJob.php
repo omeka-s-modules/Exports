@@ -2,7 +2,7 @@
 namespace Exports\Job;
 
 use Exports\Api\Representation\ExportRepresentation;
-use Exports\ExportType\ExportTypeInterface;
+use Exports\Exporter\ExporterInterface;
 use Exports\Module;
 use Omeka\Job\AbstractJob;
 use Omeka\Job\Exception;
@@ -25,9 +25,9 @@ abstract class AbstractExportJob extends AbstractJob
     protected $export;
 
     /**
-     * @var ExportTypeInterface
+     * @var ExporterInterface
      */
-    protected $exportType;
+    protected $exporter;
 
     /**
      * Get a named service. Proxy to $this->getServiceLocator().
@@ -85,16 +85,15 @@ abstract class AbstractExportJob extends AbstractJob
     }
 
     /**
-     * Get the export type object.
+     * Get the exporter object.
      */
-    public function getExportType(): ExportTypeInterface
+    public function getExporter(): ExporterInterface
     {
-        if (null === $this->exportType) {
+        if (null === $this->exporter) {
             $export = $this->getExport();
-            $this->exportType = $this->get('Exports\ExportTypeManager')
-                ->get($export->type());
+            $this->exporter = $this->get('Exports\ExporterManager')->get($export->exporterName());
         }
-        return $this->exportType;
+        return $this->exporter;
     }
 
     /**

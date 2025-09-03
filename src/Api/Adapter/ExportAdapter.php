@@ -14,7 +14,7 @@ class ExportAdapter extends AbstractEntityAdapter
 {
     protected $sortFields = [
         'label' => 'label',
-        'type' => 'type',
+        'exporter_name' => 'exporterName',
     ];
 
     public function getResourceName()
@@ -41,8 +41,8 @@ class ExportAdapter extends AbstractEntityAdapter
         $data = $request->getContent();
         if (Request::CREATE === $request->getOperation()) {
             // This value is unalterable after creation.
-            if (!isset($data['o-module-exports:export_type']) || !is_string($data['o-module-exports:export_type'])) {
-                $errorStore->addError('o-module-exports:export_type', 'export_type must be a string'); // @translate
+            if (!isset($data['o-module-exports:exporter_name']) || !is_string($data['o-module-exports:exporter_name'])) {
+                $errorStore->addError('o-module-exports:exporter_name', 'exporter name must be a string'); // @translate
             }
         }
         if (isset($data['o-module-exports:export_data']) && !is_array($data['o-module-exports:export_data'])) {
@@ -54,7 +54,7 @@ class ExportAdapter extends AbstractEntityAdapter
     {
         $this->hydrateOwner($request, $entity);
         if (Request::CREATE === $request->getOperation()) {
-            $entity->setType($request->getValue('o-module-exports:export_type'));
+            $entity->setExporterName($request->getValue('o-module-exports:exporter_name'));
         }
         if (Request::UPDATE === $request->getOperation()) {
             $entity->setModified(new DateTime('now'));
@@ -69,8 +69,8 @@ class ExportAdapter extends AbstractEntityAdapter
 
     public function validateEntity(EntityInterface $entity, ErrorStore $errorStore)
     {
-        if (!is_string($entity->getType())) {
-            $errorStore->addError('o-module-exports:export_type', 'An export must have a type'); // @translate
+        if (!is_string($entity->getExporterName())) {
+            $errorStore->addError('o-module-exports:exporter_name', 'An export must have an export name'); // @translate
         }
         if (!is_string($entity->getLabel())) {
             $errorStore->addError('o:label', 'An export must have a label'); // @translate

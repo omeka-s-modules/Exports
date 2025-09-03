@@ -1,19 +1,19 @@
 <?php
-namespace Exports\ExportType;
+namespace Exports\Exporter;
 
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\Form\Fieldset;
 
-interface ExportTypeInterface
+interface ExporterInterface
 {
     /**
-     * Get the label of this export type.
+     * Get the label of this exporter.
      */
     public function getLabel(): string;
 
     /**
-     * Get the description of this export type.
+     * Get the description of this exporter.
      */
     public function getDescription(): ?string;
 

@@ -1,9 +1,9 @@
 <?php
 namespace Exports\Controller\Admin;
 
-use Exports\ExportType;
+use Exports\Exporter;
 use Exports\Form\ExportForm;
-use Exports\Form\ExportTypeForm;
+use Exports\Form\ExporterForm;
 use Exports\Job\DeleteExportJob;
 use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -15,12 +15,12 @@ class IndexController extends AbstractActionController
 {
     protected $entityManager;
 
-    protected $exportTypeManager;
+    protected $exporterManager;
 
-    public function __construct(EntityManager $entityManager, ExportType\Manager $exportTypeManager)
+    public function __construct(EntityManager $entityManager, Exporter\Manager $exporterManager)
     {
         $this->entityManager = $entityManager;
-        $this->exportTypeManager = $exportTypeManager;
+        $this->exporterManager = $exporterManager;
     }
 
     public function browseAction()
@@ -36,16 +36,16 @@ class IndexController extends AbstractActionController
         return $view;
     }
 
-    public function addExportTypeAction()
+    public function setExporterAction()
     {
-        $form = $this->getForm(ExportTypeForm::class);
+        $form = $this->getForm(ExporterForm::class);
 
         if ($this->getRequest()->isPost()) {
             $post = $this->params()->fromPost();
             $form->setData($post);
             if ($form->isValid()) {
                 $this->messenger()->addSuccess('Configure your export below.'); // @translate
-                return $this->redirect()->toRoute(null, ['action' => 'export', 'id' => null], ['query' => ['export_type_name' => $post['export_type_name']]], true);
+                return $this->redirect()->toRoute(null, ['action' => 'export', 'id' => null], ['query' => ['exporter_name' => $post['exporter_name']]], true);
             } else {
                 $this->messenger()->addFormErrors($form);
             }
@@ -58,19 +58,19 @@ class IndexController extends AbstractActionController
 
     public function exportAction()
     {
-        $exportTypeName = $this->params()->fromQuery('export_type_name');
-        $exportType = $this->exportTypeManager->get($exportTypeName);
+        $exporterName = $this->params()->fromQuery('exporter_name');
+        $exporter = $this->exporterManager->get($exporterName);
 
-        if ($exportType instanceof ExportType\Unknown) {
-            // The export type is unknown.
+        if ($exporter instanceof Exporter\Unknown) {
+            // The exporter is unknown.
             return $this->redirect()->toRoute(null, ['action' => 'browse', 'id' => null], true);
         }
 
         $form = $this->getForm(ExportForm::class, [
-            'export_type_name' => $exportTypeName,
+            'exporter_name' => $exporterName,
         ]);
         $form->setData([
-            'o:label' => sprintf('%s - %s', $exportType->getLabel(), date('c')),
+            'o:label' => sprintf('%s - %s', $exporter->getLabel(), date('c')),
         ]);
 
         if ($this->params('id')) {

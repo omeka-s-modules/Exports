@@ -67,10 +67,10 @@ class ExportsExport extends \Exports\Entity\ExportsExport implements \Doctrine\O
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'owner', 'job', 'type', 'name', 'label', 'data', 'created'];
+            return ['__isInitialized__', 'id', 'owner', 'job', 'exporterName', 'name', 'label', 'data', 'created'];
         }
 
-        return ['__isInitialized__', 'id', 'owner', 'job', 'type', 'name', 'label', 'data', 'created'];
+        return ['__isInitialized__', 'id', 'owner', 'job', 'exporterName', 'name', 'label', 'data', 'created'];
     }
 
     /**
@@ -239,23 +239,23 @@ class ExportsExport extends \Exports\Entity\ExportsExport implements \Doctrine\O
     /**
      * {@inheritDoc}
      */
-    public function setType(string $type): void
+    public function setExporterName(string $exporterName): void
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setType', [$type]);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setExporterName', [$exporterName]);
 
-        parent::setType($type);
+        parent::setExporterName($exporterName);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getType(): string
+    public function getExporterName(): string
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getType', []);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getExporterName', []);
 
-        return parent::getType();
+        return parent::getExporterName();
     }
 
     /**

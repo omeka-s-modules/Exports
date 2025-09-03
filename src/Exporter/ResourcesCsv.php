@@ -1,5 +1,5 @@
 <?php
-namespace Exports\ExportType;
+namespace Exports\Exporter;
 
 use ArrayObject;
 use Exports\Api\Representation\ExportRepresentation;
@@ -10,7 +10,7 @@ use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Omeka\Api\Manager as ApiManager;
 
-class ResourcesCsv implements ExportTypeInterface
+class ResourcesCsv implements ExporterInterface
 {
     protected $apiManager;
 

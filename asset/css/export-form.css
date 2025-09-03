@@ -1,17 +1,17 @@
-.export-type {
+.exporter {
     margin-bottom: 1rem;
 }
 
-.export-type label {
+.exporter label {
     font-weight: bold;
     display: flex;
 }
 
-.export-type input {
+.exporter input {
     display: inline-block;
     width: 1rem;
 }
 
-.export-type-description {
+.exporter-description {
     margin-left: 1.5rem;
 }

@@ -13,14 +13,14 @@ echo $this->pageTitle($this->translate('Create export'), 1, $this->translate('Ex
 
 <h3><?php echo $this->translate('What would you like to export?'); ?></h3>
 
-<?php foreach ($form->getExportTypes() as $exportTypeName => $exportType): ?>
-<div class="export-type">
+<?php foreach ($form->getExporters() as $exporterName => $exporter): ?>
+<div class="exporter">
     <label>
-        <input type="radio" name="<?php echo $this->escapeHtml('export_type_name'); ?>" value="<?php echo $this->escapeHtml($exportTypeName); ?>" required>
-        <?php echo $this->escapeHtml($this->translate($exportType->getLabel())); ?>
+        <input type="radio" name="<?php echo $this->escapeHtml('exporter_name'); ?>" value="<?php echo $this->escapeHtml($exporterName); ?>" required>
+        <?php echo $this->escapeHtml($this->translate($exporter->getLabel())); ?>
     </label>
-    <?php if ($exportType->getDescription()): ?>
-    <div class="export-type-description"><?php echo $this->translate($exportType->getDescription()); ?></div>
+    <?php if ($exporter->getDescription()): ?>
+    <div class="exporter-description"><?php echo $this->translate($exporter->getDescription()); ?></div>
     <?php endif; ?>
 </div>
 <?php endforeach; ?>
