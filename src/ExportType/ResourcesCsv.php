@@ -4,6 +4,7 @@ namespace Exports\ExportType;
 use ArrayObject;
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
+use Laminas\EventManager\Event;
 use Laminas\EventManager\EventManager;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
@@ -28,7 +29,7 @@ class ResourcesCsv implements ExportTypeInterface
 
     public function getDescription(): ?string
     {
-        return 'Export a CSV file containing data about the selected resources.'; // @translate
+        return 'Export a CSV file containing data about resources.'; // @translate
     }
 
     public function addElements(Fieldset $fieldset): void
@@ -44,9 +45,9 @@ class ResourcesCsv implements ExportTypeInterface
             'type' => Element\Select::class,
             'name' => 'resource',
             'options' => [
-                'label' => 'Resource', // @translate
-                'info' => 'Enter the resource to export.', // @translate
-                'empty_option' => 'Select a resource', // @translate
+                'label' => 'Resource type', // @translate
+                'info' => 'Enter the type of resource to export.', // @translate
+                'empty_option' => 'Select a resource type', // @translate
                 'value_options' => $resourceValueOptions,
             ],
             'attributes' => [
@@ -58,8 +59,8 @@ class ResourcesCsv implements ExportTypeInterface
             'type' => Element\Text::class,
             'name' => 'query',
             'options' => [
-                'label' => 'Query', // @translate
-                'info' => 'Enter the query string used to filter the resources.', // @translate
+                'label' => 'Resource query', // @translate
+                'info' => 'Enter the query used to filter the resources to be exported. If no query is entered, all available resources will be exported.', // @translate
             ],
             'attributes' => [
                 'id' => 'query',
@@ -83,20 +84,26 @@ class ResourcesCsv implements ExportTypeInterface
 
     public function export(ExportRepresentation $export, ExportJob $job): void
     {
-        $resourceName = $export->dataValue('resource');
+        $resourceType = $export->dataValue('resource');
         parse_str($export->dataValue('query'), $resourceQuery);
 
+        // Get the resource IDs.
         $resourceIds = $this->apiManager->search(
-            $resourceName,
+            $resourceType,
             $resourceQuery,
             ['returnScalar' => 'id']
         )->getContent();
+
+        // To avoid having to hold every CSV row in memory before writing to the
+        // file, we're defining the header row first and then adding the
+        // resource rows using the header row as a template. This requires two
+        // passes of the resources.
 
         // Iterate every resource, building the CSV header row.
         $headerRow = [];
         foreach (array_chunk($resourceIds, 100) as $resourceIdsChunk) {
             foreach ($resourceIdsChunk as $resourceId) {
-                $resource = $this->apiManager->read($resourceName, $resourceId)->getContent();
+                $resource = $this->apiManager->read($resourceType, $resourceId)->getContent();
                 $resourceJson = json_decode(json_encode($resource), true);
                 foreach ($resourceJson as $k => $v) {
                     $fieldData = $this->getFieldData($k, $v, $export);
@@ -107,6 +114,7 @@ class ResourcesCsv implements ExportTypeInterface
                     }
                 }
             }
+            // Clear memory after every chunk.
             $job->detachAllNewEntities();
         }
 
@@ -119,7 +127,7 @@ class ResourcesCsv implements ExportTypeInterface
         $rowTemplate = array_fill_keys($headerRow, null);
         foreach (array_chunk($resourceIds, 100) as $resourceIdsChunk) {
             foreach ($resourceIdsChunk as $resourceId) {
-                $resource = $this->apiManager->read($resourceName, $resourceId)->getContent();
+                $resource = $this->apiManager->read($resourceType, $resourceId)->getContent();
                 $resourceJson = json_decode(json_encode($resource), true);
                 $resourceRow = $rowTemplate;
                 foreach ($resourceJson as $k => $v) {
@@ -135,6 +143,7 @@ class ResourcesCsv implements ExportTypeInterface
                 // Write the resource row to the CSV file.
                 fputcsv($fp, $resourceRow, ',', '"', '');
             }
+            // Clear memory after every chunk.
             $job->detachAllNewEntities();
         }
 
@@ -144,7 +153,7 @@ class ResourcesCsv implements ExportTypeInterface
     /**
      * Get CSV field data from a JSON-LD key-value pair.
      *
-     * Determines whether to keep the key-value pair and returns an array of
+     * Determines whether to process the key-value pair and returns an array of
      * corresponding CSV header-field pairs.
      */
     public function getFieldData(string $k, $v, ExportRepresentation $export): ?array
@@ -204,20 +213,14 @@ class ResourcesCsv implements ExportTypeInterface
             );
         }
 
-        // Next, let modules return CSV field data. Modules should add field
-        // data, if any, to the "field_data" param's ArrayObject.
+        // Next, let modules return CSV field data.
         $fieldData = new ArrayObject;
-        $eventParams = [
-            'k' => $k,
-            'v' => $v,
-            'export' => $export,
-            'field_data' => $fieldData,
-        ];
-        $event = new \Laminas\EventManager\Event(
-            'exports.resources_csv.get_field_data',
-            $this,
-            $eventParams
-        );
+        $event = new Event('exports.resources_csv.get_field_data', $this, [
+            'k' => $k, // The JSON-LD key
+            'v' => $v,  // The JSON-LD value
+            'export' => $export, // The export respresentation
+            'field_data' => $fieldData, // Modules set CSV header-field pairs to this array object
+        ]);
         $this->eventManager->triggerEvent($event);
         if ($fieldData->count()) {
             return $fieldData->getArrayCopy();
