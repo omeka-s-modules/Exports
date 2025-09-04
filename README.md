@@ -59,7 +59,7 @@ class MyExporter implements \Exports\Exporter\ExporterInterface
     {
         file_put_contents(
             sprintf('%s/%s.txt', $job->getExportDirectoryPath(), $export->name()),
-            $export->dataValue('content')
+            $export->dataValue('text')
         );
     }
 }
