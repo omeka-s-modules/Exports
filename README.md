@@ -2,6 +2,70 @@
 
 An [Omeka S](https://omeka.org/s/) module for exporting files.
 
+## For developers
+
+Modules can add custom exporters by registering them as services in their module
+configuration under `[exports_module][exporters]`:
+
+```php
+'exports_module' => [
+    'exporters' => [
+        'invokables' => [
+            'my_exporter' => \MyModue\Exporter\MyExporter::class,
+        ],
+    ],
+],
+```
+
+The MyExporter class must implement `\Exports\Exporter\ExporterInterface`.
+
+```php
+class MyExporter implements \Exports\Exporter\ExporterInterface
+{
+    /**
+     * Get the label of this exporter.
+     */
+    public function getLabel(): string
+    {
+        return 'My Exporter'; // @translate
+    }
+
+    /**
+     * Get the description of this exporter.
+     */
+    public function getDescription(): ?string
+    {
+        return 'Export text.'; // @translate
+    }
+
+    /**
+     * Add the form elements used for the export data.
+     */
+    public function addElements(Fieldset $fieldset): void
+    {
+        $fieldset->add([
+            'type' => 'textarea',
+            'name' => 'text',
+            'options' => [
+                'label' => 'Text', // @translate
+            ],
+        ]);
+    }
+
+    /**
+     * Export the data.
+     */
+    public function export(ExportRepresentation $export, ExportJob $job): void
+    {
+        file_put_contents(
+            sprintf('%s/%s.txt', $job->getExportDirectoryPath(), $export->name()),
+            $export->dataValue('content')
+        );
+    }
+}
+```
+
+
 # Copyright
 
 Exports is Copyright © 2020-present Corporation for Digital Scholarship, Vienna,
