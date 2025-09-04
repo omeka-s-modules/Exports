@@ -8,13 +8,13 @@ An [Omeka S](https://omeka.org/s/) module for exporting files.
 
 Modules can add custom exporters by registering them as services in their module
 configuration under `[exports_module][exporters]`. For example, if you want to register
-a "MyExporter" exporter:
+a "MyExporter" exporter for your "MyModule" module:
 
 ```php
 'exports_module' => [
     'exporters' => [
         'invokables' => [
-            'my_exporter' => \MyModue\Exporter\MyExporter::class,
+            'my_module_exporter' => \MyModule\Exporter\MyExporter::class,
         ],
     ],
 ],
@@ -23,7 +23,7 @@ a "MyExporter" exporter:
 The MyExporter class must implement `\Exports\Exporter\ExporterInterface`:
 
 ```php
-namespace MyExporter\Exporter;
+namespace MyModule\Exporter;
 
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Exporter\ExporterInterface;
@@ -35,7 +35,7 @@ class MyExporter implements ExporterInterface
 {
     public function getLabel(): string
     {
-        return 'My Exporter'; // @translate
+        return 'My Module Exporter'; // @translate
     }
     public function getDescription(): ?string
     {
@@ -67,7 +67,38 @@ all exported files and directories. Use `$job->getExportDirectoryPath()` to get
 the path to this directory. After work is done, the export job will create the export
 ZIP file, copy the file to Omeka storage, and delete any leftover server artifacts.
 
-###
+### Extending the ResourcesCsv exporter
+
+The ResourcesCsv exporter allows modules to add columns to the CSV file using the
+`exports.resources_csv.get_field_data` event. For example, in `Module::attachListeners()`:
+
+```php
+$sharedEventManager->attach(
+    '*',
+    'exports.resources_csv.get_field_data',
+    function (Event $event) {
+        $params = $event->getParams();
+
+        $k = $params['k'];
+        $v = $params['v'];
+        $export = $params['export'];
+        $fieldData = $params['field_data'];
+
+        if ('o-module-mymodule:mydata' === $k) {
+            // Do any processing to the value and add the header-field pair to
+            // the $fieldData ArrayObject.
+            $fieldData[] = [$k, $v];
+        }
+    }
+);
+```
+
+The event provides the following parameters:
+
+- `k`: The JSON-LD key; use to detect relevant values
+- `v`: The JSON-LD value
+- `export`: The export representation; use to get export data if needed
+- `field_data`: An `ArrayObject`; use to set CSV header-field pair(s)
 
 # Copyright
 
