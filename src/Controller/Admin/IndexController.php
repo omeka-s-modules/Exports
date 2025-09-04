@@ -92,12 +92,12 @@ class IndexController extends AbstractActionController
                 $response = $this->api($form)->create('exports_exports', $formData);
                 if ($response) {
                     $export = $response->getContent();
-                    $job = $export->job();
+                    $exportJob = $export->job();
                     // Set the message and redirect to browse.
                     $message = new Message(
                         '%s <a href="%s">%s</a>',
                         $this->translate('Exporting. This may take a while.'),
-                        htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $job->id()])),
+                        htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $exportJob->id()])),
                         $this->translate('See this job for progress.')
                     );
                     $message->setEscapeHtml(false);
@@ -137,15 +137,16 @@ class IndexController extends AbstractActionController
                 if ($response) {
                     // Dispatch the export delete job only if the job is at a
                     // state where it can be done safely.
-                    if (in_array($export->job()->status(), ['completed', 'stopped', 'error'])) {
-                        $job = $this->jobDispatcher()->dispatch(
+                    $exportJob = $export->job();
+                    if ($exportJob && in_array($exportJob->status(), ['completed', 'stopped', 'error'])) {
+                        $deleteExportjob = $this->jobDispatcher()->dispatch(
                             DeleteExportJob::class,
                             ['export_name' => $export->name()]
                         );
                         $message = new Message(
                             '%s <a href="%s">%s</a>',
                             $this->translate('Successfully deleted the export resource. Deleting export artifacts from the server.'),
-                            htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $job->getId()])),
+                            htmlspecialchars($this->url()->fromRoute('admin/id', ['controller' => 'job', 'id' => $deleteExportjob->getId()])),
                             $this->translate('See this job for progress.')
                         );
                         $message->setEscapeHtml(false);
