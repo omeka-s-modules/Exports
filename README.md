@@ -4,8 +4,11 @@ An [Omeka S](https://omeka.org/s/) module for exporting files.
 
 ## For developers
 
+### Adding custom exporters
+
 Modules can add custom exporters by registering them as services in their module
-configuration under `[exports_module][exporters]`:
+configuration under `[exports_module][exporters]`. For example, if you want to register
+a "MyExporter" exporter:
 
 ```php
 'exports_module' => [
@@ -17,30 +20,27 @@ configuration under `[exports_module][exporters]`:
 ],
 ```
 
-The MyExporter class must implement `\Exports\Exporter\ExporterInterface`.
+The MyExporter class must implement `\Exports\Exporter\ExporterInterface`:
 
 ```php
-class MyExporter implements \Exports\Exporter\ExporterInterface
+namespace MyExporter\Exporter;
+
+use Exports\Api\Representation\ExportRepresentation;
+use Exports\Exporter\ExporterInterface;
+use Exports\Job\ExportJob;
+use Laminas\Form\Fieldset;
+
+
+class MyExporter implements ExporterInterface
 {
-    /**
-     * Get the label of this exporter.
-     */
     public function getLabel(): string
     {
         return 'My Exporter'; // @translate
     }
-
-    /**
-     * Get the description of this exporter.
-     */
     public function getDescription(): ?string
     {
         return 'Export text.'; // @translate
     }
-
-    /**
-     * Add the form elements used for the export data.
-     */
     public function addElements(Fieldset $fieldset): void
     {
         $fieldset->add([
@@ -51,10 +51,6 @@ class MyExporter implements \Exports\Exporter\ExporterInterface
             ],
         ]);
     }
-
-    /**
-     * Export the data.
-     */
     public function export(ExportRepresentation $export, ExportJob $job): void
     {
         file_put_contents(
@@ -65,6 +61,13 @@ class MyExporter implements \Exports\Exporter\ExporterInterface
 }
 ```
 
+`ExporterInterface::export()` is where you do the actual export. Prior to calling
+this method, the export job will create a temporary directory where you should place
+all exported files and directories. Use `$job->getExportDirectoryPath()` to get
+the path to this directory. After work is done, the export job will create the export
+ZIP file, copy the file to Omeka storage, and delete any leftover server artifacts.
+
+###
 
 # Copyright
 
