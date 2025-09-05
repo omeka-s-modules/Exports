@@ -84,6 +84,8 @@ class ResourcesCsv implements ExporterInterface
 
     public function export(ExportRepresentation $export, ExportJob $job): void
     {
+        $job->setOriginalIdentityMap();
+
         $resourceType = $export->dataValue('resource');
         parse_str($export->dataValue('query'), $resourceQuery);
 

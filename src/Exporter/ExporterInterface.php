@@ -8,22 +8,22 @@ use Laminas\Form\Fieldset;
 interface ExporterInterface
 {
     /**
-     * Get the label of this exporter.
+     * Get the exporter label.
      */
     public function getLabel(): string;
 
     /**
-     * Get the description of this exporter.
+     * Get the exporter description.
      */
     public function getDescription(): ?string;
 
     /**
-     * Add the form elements used for the export data.
+     * Add form elements needed to configure the export.
      */
     public function addElements(Fieldset $fieldset): void;
 
     /**
-     * Export the data.
+     * Do the export, placing export assets in the export directory.
      */
     public function export(ExportRepresentation $export, ExportJob $job): void;
 }

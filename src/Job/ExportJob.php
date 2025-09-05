@@ -4,20 +4,10 @@ namespace Exports\Job;
 class ExportJob extends AbstractExportJob
 {
     /**
-     * @var array
-     */
-    protected $originalIdentityMap;
-
-    /**
      * Create the export.
      */
     public function perform(): void
     {
-        // Set the original entity map.
-        $this->originalIdentityMap = $this->get('Omeka\EntityManager')
-            ->getUnitOfWork()
-            ->getIdentityMap();
-
         $export = $this->getExport();
 
         // First make the export directory.

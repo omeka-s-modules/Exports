@@ -30,6 +30,11 @@ abstract class AbstractExportJob extends AbstractJob
     protected $exporter;
 
     /**
+     * @var array
+     */
+    protected $originalIdentityMap;
+
+    /**
      * Get a named service. Proxy to $this->getServiceLocator().
      */
     public function get(string $serviceName)
@@ -184,8 +189,23 @@ abstract class AbstractExportJob extends AbstractJob
     }
 
     /**
-     * Detach all new entities to avoid memory allocation issues during batch
-     * processes.
+     * Set the original entity map.
+     *
+     * Call this once in `ExporterInterface::export()` before processing batches.
+     */
+    public function setOriginalIdentityMap(): void
+    {
+        // Set the original entity map.
+        $this->originalIdentityMap = $this->get('Omeka\EntityManager')
+            ->getUnitOfWork()
+            ->getIdentityMap();
+    }
+
+    /**
+     * Detach all new entities.
+     *
+     * Call this between batches to avoid memory allocation issues. Remember to
+     * call `self::setOriginalIdentityMap()` once before processing batches.
      */
     public function detachAllNewEntities(): void
     {
