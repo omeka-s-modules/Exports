@@ -104,6 +104,9 @@ class ResourcesCsv implements ExporterInterface
         // Iterate every resource, building the CSV header row.
         $headerRow = [];
         foreach (array_chunk($resourceIds, 100) as $resourceIdsChunk) {
+            if ($job->shouldStop()) {
+                return; // Stop the job if requested.
+            }
             foreach ($resourceIdsChunk as $resourceId) {
                 $resource = $this->apiManager->read($resourceType, $resourceId)->getContent();
                 $resourceJson = json_decode(json_encode($resource), true);
@@ -128,6 +131,9 @@ class ResourcesCsv implements ExporterInterface
         // Iterate every resource, building one CSV resource row at a time.
         $rowTemplate = array_fill_keys($headerRow, null);
         foreach (array_chunk($resourceIds, 100) as $resourceIdsChunk) {
+            if ($job->shouldStop()) {
+                return; // Stop the job if requested.
+            }
             foreach ($resourceIdsChunk as $resourceId) {
                 $resource = $this->apiManager->read($resourceType, $resourceId)->getContent();
                 $resourceJson = json_decode(json_encode($resource), true);

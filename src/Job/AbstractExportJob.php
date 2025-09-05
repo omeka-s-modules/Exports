@@ -141,22 +141,6 @@ abstract class AbstractExportJob extends AbstractJob
     }
 
     /**
-     * Create the export ZIP file.
-     */
-    public function createExportZip(): void
-    {
-        $command = sprintf(
-            '%s %s && %s --recurse-paths ../%s .',
-            $this->get('Omeka\Cli')->getCommandPath('cd'),
-            sprintf('%s/%s', $this->getExportsDirectoryPath(), $this->getExportName()),
-            $this->get('Omeka\Cli')->getCommandPath('zip'),
-            sprintf('%s.zip', $this->getExportName()),
-            $this->getExportName()
-        );
-        $this->execute($command);
-    }
-
-    /**
      * Delete the export directory from the server.
      */
     public function deleteExportDirectory(): void
