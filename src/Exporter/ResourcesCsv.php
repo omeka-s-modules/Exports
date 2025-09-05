@@ -9,6 +9,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
 use Omeka\Api\Manager as ApiManager;
+use Omeka\Api\ResourceInterface;
 
 class ResourcesCsv implements ExporterInterface
 {
@@ -37,6 +38,12 @@ class ResourcesCsv implements ExporterInterface
         $apiResources = $this->apiManager->search('api_resources')->getContent();
         $resourceValueOptions = [];
         foreach ($apiResources as $apiResource) {
+            // The value_annotations resource does not implement the search or
+            // read API operations. Remove it as an export option. Annotations
+            // are available when exporting items, media, and item_sets.
+            if ('value_annotations' === $apiResource->id()) {
+                continue;
+            }
             $resourceValueOptions[$apiResource->id()] = $apiResource->id();
         }
         asort($resourceValueOptions);
@@ -95,6 +102,14 @@ class ResourcesCsv implements ExporterInterface
             $resourceQuery,
             ['returnScalar' => 'id']
         )->getContent();
+
+        // Some API adapters don't implement the returnScalar request option and
+        // return Omeka\Api\ResourceInterface objects instead of scalar IDs. In
+        // that case, convert the objects to their corresponding scalar IDs.
+        $resourceIds = array_map(
+            fn($resourceId) => ($resourceId instanceof ResourceInterface) ? $resourceId->getId() : $resourceId,
+            $resourceIds
+        );
 
         // To avoid having to hold every CSV row in memory before writing to the
         // file, we're defining the header row first and then adding the
