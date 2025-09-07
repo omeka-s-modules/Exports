@@ -8,6 +8,7 @@ return [
         'exporters' => [
             'factories' => [
                 'resources_csv' => Service\Exporter\ResourcesCsvFactory::class,
+                'resources_jsonld' => Service\Exporter\ResourcesJsonLdFactory::class,
             ],
         ],
     ],

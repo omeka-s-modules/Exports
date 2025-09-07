@@ -5,24 +5,11 @@ use ArrayObject;
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\EventManager\Event;
-use Laminas\EventManager\EventManager;
 use Laminas\Form\Element;
 use Laminas\Form\Fieldset;
-use Omeka\Api\Manager as ApiManager;
-use Omeka\Api\ResourceInterface;
 
-class ResourcesCsv implements ExporterInterface
+class ResourcesCsv extends AbstractResourcesExporter
 {
-    protected $apiManager;
-
-    protected $eventManager;
-
-    public function __construct(ApiManager $apiManager, EventManager $eventManager)
-    {
-        $this->apiManager = $apiManager;
-        $this->eventManager = $eventManager;
-    }
-
     public function getLabel(): string
     {
         return 'Resources CSV'; // @translate
@@ -35,19 +22,6 @@ class ResourcesCsv implements ExporterInterface
 
     public function addElements(Fieldset $fieldset): void
     {
-        $apiResources = $this->apiManager->search('api_resources')->getContent();
-        $resourceValueOptions = [];
-        foreach ($apiResources as $apiResource) {
-            // The value_annotations resource does not implement the search or
-            // read API operations. Remove it as an export option. Annotations
-            // are available when exporting items, media, and item_sets.
-            if ('value_annotations' === $apiResource->id()) {
-                continue;
-            }
-            $resourceValueOptions[$apiResource->id()] = $apiResource->id();
-        }
-        asort($resourceValueOptions);
-
         $fieldset->add([
             'type' => Element\Select::class,
             'name' => 'resource',
@@ -55,7 +29,7 @@ class ResourcesCsv implements ExporterInterface
                 'label' => 'Resource type', // @translate
                 'info' => 'Enter the type of resource to export.', // @translate
                 'empty_option' => 'Select a resource type', // @translate
-                'value_options' => $resourceValueOptions,
+                'value_options' => $this->getResourceValueOptions(),
             ],
             'attributes' => [
                 'id' => 'resource',
@@ -97,19 +71,7 @@ class ResourcesCsv implements ExporterInterface
         parse_str($export->dataValue('query'), $resourceQuery);
 
         // Get the resource IDs.
-        $resourceIds = $this->apiManager->search(
-            $resourceType,
-            $resourceQuery,
-            ['returnScalar' => 'id']
-        )->getContent();
-
-        // Some API adapters don't implement the returnScalar request option and
-        // return Omeka\Api\ResourceInterface objects instead of scalar IDs. In
-        // that case, convert the objects to their corresponding scalar IDs.
-        $resourceIds = array_map(
-            fn($resourceId) => ($resourceId instanceof ResourceInterface) ? $resourceId->getId() : $resourceId,
-            $resourceIds
-        );
+        $resourceIds = $this->getResourceIds($resourceType, $resourceQuery);
 
         // To avoid having to hold every CSV row in memory before writing to the
         // file, we're defining the header row first and then adding the
