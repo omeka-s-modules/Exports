@@ -9,9 +9,6 @@ class IndexControllerFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
     {
-        return new IndexController(
-            $services->get('Omeka\EntityManager'),
-            $services->get('Exports\ExporterManager'),
-        );
+        return new IndexController($services->get('Exports\ExporterManager'));
     }
 }

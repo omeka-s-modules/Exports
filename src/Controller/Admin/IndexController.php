@@ -5,7 +5,6 @@ use Exports\Exporter;
 use Exports\Form\ExportForm;
 use Exports\Form\ExporterForm;
 use Exports\Job\DeleteExportJob;
-use Doctrine\ORM\EntityManager;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Omeka\Form\ConfirmForm;
@@ -13,13 +12,10 @@ use Omeka\Stdlib\Message;
 
 class IndexController extends AbstractActionController
 {
-    protected $entityManager;
-
     protected $exporterManager;
 
-    public function __construct(EntityManager $entityManager, Exporter\Manager $exporterManager)
+    public function __construct(Exporter\Manager $exporterManager)
     {
-        $this->entityManager = $entityManager;
         $this->exporterManager = $exporterManager;
     }
 
