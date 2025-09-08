@@ -1,14 +1,23 @@
 # Exports
 
-An [Omeka S](https://omeka.org/s/) module for exporting files.
+An [Omeka S](https://omeka.org/s/) module for exporting data.
+
+After installing this module, administrators are able to select from a list of exporters,
+configure export options, and initiate the export process. Once the export process
+is complete, all exported assets will be available for download within one ZIP file.
+
+Exports comes with two exporters:
+
+- Resources CSV: Export a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file containing data about selected resources
+- Resources JSON-LD: Export a [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD) file containing data about selected resources
 
 ## For developers
 
 ### Adding custom exporters
 
-Modules can add custom exporters by registering them as services in their module
-configuration under `[exports_module][exporters]`. For example, if you want to register
-a "MyExporter" exporter for your "MyModule" module:
+Modules can add custom exporters by registering them as services in module configuration
+under `[exports_module][exporters]`. For example, if you want to register a "MyExporter"
+exporter for your "MyModule" module:
 
 ```php
 'exports_module' => [

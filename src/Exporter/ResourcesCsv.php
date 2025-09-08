@@ -17,7 +17,7 @@ class ResourcesCsv extends AbstractResourcesExporter
 
     public function getDescription(): ?string
     {
-        return 'Export a CSV file containing data about resources.'; // @translate
+        return 'Export a CSV file containing data about selected resources.'; // @translate
     }
 
     public function addElements(Fieldset $fieldset): void

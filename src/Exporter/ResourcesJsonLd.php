@@ -15,7 +15,7 @@ class ResourcesJsonLd extends AbstractResourcesExporter
 
     public function getDescription(): ?string
     {
-        return 'Export a JSON-LD file containing data about resources.'; // @translate
+        return 'Export a JSON-LD file containing data about selected resources.'; // @translate
     }
 
     public function addElements(Fieldset $fieldset): void
