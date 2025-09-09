@@ -1,15 +1,38 @@
 # Exports
 
-An [Omeka S](https://omeka.org/s/) module for exporting data.
+An [Omeka S](https://omeka.org/s/) module for exporting assets.
 
-After installing this module, administrators are able to select from a list of exporters,
-configure export options, and initiate the export process. Once the export process
-is complete, all exported assets will be available for download within one ZIP file.
+## Installation
 
-Exports comes with two exporters:
+Follow these [instructions](https://omeka.org/s/docs/user-manual/modules/) on how
+to install the module. On the module configuration page you must set an "Exports
+directory path". This is the path to the directory where your exports will be built.
+The path must exist and be writable by the web server.
+
+## Export
+
+To export assets, click on the "Exports" link in the side navigation, click on the
+"Create an export" button, select what you would like to export, configure export
+options, and initiate the export job by clicking on the "Begin export" button. You
+can check on the status of the export job by refreshing the page or in the "Details"
+sidebar.
+
+Once the export job is complete, all exported assets will be available for download
+within one ZIP file. The download link is available by clicking on the "Download"
+icon in the export row, or in the "Details" sidebar.
+
+This module comes with two exporters:
 
 - Resources CSV: Export a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file containing data about selected resources
 - Resources JSON-LD: Export a [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD) file containing data about selected resources
+
+The exports browse page contains paginated data about all exports. Each row contains
+icons that do certain things when clicked:
+
+- "Details": View the details sidebar, which contains detailed information about the export
+- "Re-export": Open the export form, populated with the specific configuration options
+- "Download": Download the export ZIP file, available once the export job is complete
+- "Delete": Delete the export resouce, the export ZIP file, and any leftover server artifacts
 
 ## For developers
 
