@@ -7,15 +7,24 @@ use Exports\Job\ExportJob;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\Mvc\Controller\AbstractController;
+use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\View\Renderer\PhpRenderer;
+use Omeka\Permissions\Assertion\OwnsEntityAssertion;
 use Omeka\Module\AbstractModule;
+use Omeka\Permissions\Acl;
 
 class Module extends AbstractModule
 {
     public function getConfig()
     {
         return include sprintf('%s/config/module.config.php', __DIR__);
+    }
+
+    public function onBootstrap(MvcEvent $event)
+    {
+        parent::onBootstrap($event);
+        $this->addAclRules();
     }
 
     public function install(ServiceLocatorInterface $services)
@@ -101,6 +110,63 @@ SQL;
         );
     }
 
+    /**
+     * Add ACL rules.
+     */
+    public function addAclRules()
+    {
+        $acl = $this->getServiceLocator()->get('Omeka\Acl');
+        // Give all roles permission to access all index controller actions.
+        $acl->allow(
+            null,
+            'Exports\Controller\Admin\Index'
+        );
+        // Give all roles permission to perform search and read operations on the
+        // Export API adapter.
+        $acl->allow(
+            null,
+            'Exports\Api\Adapter\ExportAdapter',
+            ['search', 'read']
+        );
+        // Give all but the researcher role permission to perform create, update,
+        // and delete operations on the Export API adapter.
+        $acl->allow(
+            [
+                Acl::ROLE_EDITOR,
+                Acl::ROLE_REVIEWER,
+                Acl::ROLE_AUTHOR,
+            ],
+            'Exports\Api\Adapter\ExportAdapter',
+            ['create', 'update', 'delete']
+        );
+        // Give all roles permission to read export entities.
+        $acl->allow(
+            null,
+            'Exports\Entity\ExportsExport',
+            'read'
+        );
+        // Give all roles permission to delete export entities they own.
+        $acl->allow(
+            null,
+            'Exports\Entity\ExportsExport',
+            'delete',
+            new OwnsEntityAssertion
+        );
+        // Give all but the researcher role permission to create export entities.
+        $acl->allow(
+            [
+                Acl::ROLE_EDITOR,
+                Acl::ROLE_REVIEWER,
+                Acl::ROLE_AUTHOR,
+            ],
+            'Exports\Entity\ExportsExport',
+            'create'
+        );
+    }
+
+    /**
+     * Is the exports directory path valid?
+     */
     public static function exportsDirectoryPathIsValid(string $exportsDirectoryPath)
     {
         return (is_dir($exportsDirectoryPath) && is_writable($exportsDirectoryPath));

@@ -19,13 +19,18 @@ $owner = $export->owner();
     <h4><?php echo $this->translate('Export job'); ?></h4>
     <?php if ($job): ?>
     <div class="value"><?php
-        echo sprintf(
-            $this->translate('Status: %s [%s]'),
-            $job->link($job->statusLabel()),
-            $job->log()
-                ? $this->hyperlink($this->translate('view log'), $this->url('admin/id', ['controller' => 'job', 'action' => 'log', 'id' => $job->id()]), ['target' => '_blank'])
-                : $this->translate('no log')
-        ); ?></div>
+        if ($this->userIsAllowed('Omeka\Controller\Admin\Job', 'show')) {
+            echo sprintf(
+                $this->translate('Status: %s [%s]'),
+                $job->link($job->statusLabel()),
+                $job->log()
+                    ? $this->hyperlink($this->translate('view log'), $this->url('admin/id', ['controller' => 'job', 'action' => 'log', 'id' => $job->id()]), ['target' => '_blank'])
+                    : $this->translate('no log')
+            );
+        } else {
+            echo sprintf($this->translate('Status: %s'), $job->statusLabel());
+        }
+        ?></div>
     <div class="value"><?php echo sprintf($this->translate('Started: %s'), $this->i18n()->dateFormat($job->started(), 'medium', 'medium')); ?></div>
     <div class="value"><?php echo sprintf($this->translate('Ended: %s'), $this->i18n()->dateFormat($job->ended(), 'medium', 'medium')); ?></div>
     <?php else: ?>

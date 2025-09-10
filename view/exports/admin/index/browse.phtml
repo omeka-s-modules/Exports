@@ -1,7 +1,8 @@
 <?php
 use Exports\Module;
 
-$canExport = Module::exportsDirectoryPathIsValid($this->setting('exports_directory_path'));
+$pathIsValid = Module::exportsDirectoryPathIsValid($this->setting('exports_directory_path'));
+$canCreate = $pathIsValid && $this->userIsAllowed('Exports\Api\Adapter\ExportAdapter', 'create');
 
 $this->headLink()->appendStylesheet($this->assetUrl('css/export-browse.css', 'Exports'));
 
@@ -11,7 +12,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
 <?php echo $this->pageTitle($this->translate('Exports'), 1, $this->translate('Exports')); ?>
 
 <div id="page-actions">
-    <?php if ($canExport): ?>
+    <?php if ($canCreate): ?>
     <?php echo $this->hyperlink($this->translate('Create an export'), $this->url(null, ['action' => 'set-exporter', 'id' => null,], true), ['class' => 'button']); ?>
     <?php endif; ?>
 </div>
@@ -68,28 +69,46 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
                         'class' => 'o-icon-more sidebar-content',
                         'title' => $this->translate('Details'),
                     ]); ?></li>
-                    <li><?php echo $this->hyperlink('', $reExportUrl, [
-                        'class' => 'far fa-copy',
-                        'title' => $this->translate('Re-export'),
-                    ]); ?></li>
                     <?php if ($export->downloadAvailable()): ?>
                     <li><?php echo $this->hyperlink('', $export->downloadUrl(), [
                         'class' => 'o-icon-download',
                         'title' => $this->translate('Download'),
                     ]); ?></li>
                     <?php endif; ?>
+                    <?php if ($canCreate): ?>
+                    <li><?php echo $this->hyperlink('', $reExportUrl, [
+                        'class' => 'far fa-copy',
+                        'title' => $this->translate('Re-export'),
+                    ]); ?></li>
+                    <?php  endif; ?>
+                    <?php if ($pathIsValid && $export->userIsAllowed('delete')): ?>
                     <li><?php echo $this->hyperlink('', '#', [
                         'data-sidebar-selector' => '#sidebar',
                         'data-sidebar-content-url' => $export->url('delete-confirm'),
                         'class' => 'o-icon-delete sidebar-content',
                         'title' => $this->translate('Delete'),
                     ]); ?></li>
+                    <?php  endif; ?>
                 </ul>
             </td>
-            <td><?php echo $export->exporterLabel() ?></td>
-            <td><?php echo $job ? $job->link($job->statusLabel()) : $this->translate('Unknown'); ?></td>
-            <td><?php echo $owner ? $owner->link($owner->name()) : ''; ?></td>
-            <td><?php echo $this->i18n()->dateFormat($export->created()); ?></td>
+            <td>
+                <?php echo $export->exporterLabel() ?>
+            </td>
+            <td>
+                <?php if ($job): ?>
+                <?php echo $this->userIsAllowed('Omeka\Controller\Admin\Job', 'show')
+                    ? $job->link($job->statusLabel())
+                    : $job->statusLabel(); ?>
+                <?php else: ?>
+                <?php echo $this->translate('Unknown'); ?>
+                <?php endif; ?>
+            </td>
+            <td>
+                <?php echo $owner ? $owner->link($owner->name()) : ''; ?>
+            </td>
+            <td>
+                <?php echo $this->i18n()->dateFormat($export->created()); ?>
+            </td>
         </tr>
     <?php endforeach; ?>
     </tbody>
@@ -103,7 +122,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
 <div class="no-resources">
     <p><?php echo sprintf(
         $this->translate('No exports found. %s'),
-        $canExport ? $this->hyperlink($this->translate('Create a new export.'), $this->url(null, ['action' => 'set-exporter'], true)) : ''
+        $canCreate ? $this->hyperlink($this->translate('Create a new export.'), $this->url(null, ['action' => 'set-exporter'], true)) : ''
     ); ?></p>
 </div>
 <?php endif; ?>
