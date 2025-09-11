@@ -63,12 +63,6 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
             <td>
                 <?php echo $export->label(); ?>
                 <ul class="actions">
-                    <li><?php echo $this->hyperlink('', '#', [
-                        'data-sidebar-selector' => '#sidebar',
-                        'data-sidebar-content-url' => $export->url('show-details'),
-                        'class' => 'o-icon-more sidebar-content',
-                        'title' => $this->translate('Details'),
-                    ]); ?></li>
                     <?php if ($export->downloadAvailable()): ?>
                     <li><?php echo $this->hyperlink('', $export->downloadUrl(), [
                         'class' => 'o-icon-download',
@@ -89,6 +83,12 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
                         'title' => $this->translate('Delete'),
                     ]); ?></li>
                     <?php  endif; ?>
+                    <li><?php echo $this->hyperlink('', '#', [
+                        'data-sidebar-selector' => '#sidebar',
+                        'data-sidebar-content-url' => $export->url('show-details'),
+                        'class' => 'o-icon-more sidebar-content',
+                        'title' => $this->translate('Details'),
+                    ]); ?></li>
                 </ul>
             </td>
             <td>

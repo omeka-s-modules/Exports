@@ -193,8 +193,14 @@ abstract class AbstractExportJob extends AbstractJob
      */
     public function detachAllNewEntities(): void
     {
-        $this->get('Omeka\ApiAdapterManager')
-            ->get('items')
-            ->detachAllNewEntities($this->originalIdentityMap);
+        $entityManager = $this->get('Omeka\EntityManager');
+        $identityMap = $entityManager->getUnitOfWork()->getIdentityMap();
+        foreach ($identityMap as $entityClass => $entities) {
+            foreach ($entities as $idHash => $entity) {
+                if (!isset($this->originalIdentityMap[$entityClass][$idHash])) {
+                    $entityManager->detach($entity);
+                }
+            }
+        }
     }
 }
