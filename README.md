@@ -21,18 +21,17 @@ Once the export job is complete, all exported assets will be available for downl
 within one ZIP file. The download link is available by clicking on the "Download"
 icon in the export row, or in the "Details" sidebar.
 
-This module comes with two exporters:
+This module comes with one exporter:
 
-- Resources CSV: Export a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file containing data about selected resources
-- Resources JSON-LD: Export a [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD) file containing data about selected resources
+- Resources: Export a file containing data about selected resources ([CSV](https://en.wikipedia.org/wiki/Comma-separated_values) or [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD))
 
 The exports browse page contains paginated data about all exports. Each row contains
 icons that do certain things when clicked:
 
-- "Details": View the details sidebar, which contains detailed information about the export
-- "Re-export": Open the export form, populated with the specific configuration options
 - "Download": Download the export ZIP file, available once the export job is complete
+- "Re-export": Open the export form, populated with the specific configuration options
 - "Delete": Delete the export resouce, the export ZIP file, and any leftover server artifacts
+- "Details": View the details sidebar, which contains detailed information about the export
 
 ## For developers
 
@@ -99,15 +98,15 @@ all exported files and directories. Use `$job->getExportDirectoryPath()` to get
 the path to this directory. After work is done, the export job will create the export
 ZIP file, copy the file to Omeka storage, and delete any leftover server artifacts.
 
-### Extending the ResourcesCsv exporter
+### Extending the Resources exporter (CSV)
 
-The ResourcesCsv exporter allows modules to add columns to the CSV file using the
-`exports.resources_csv.get_field_data` event. For example, in `Module::attachListeners()`:
+The Resources exporter allows modules to add columns to a CSV file using the
+`exports.resources.csv.get_field_data` event. For example, in `Module::attachListeners()`:
 
 ```php
 $sharedEventManager->attach(
     '*',
-    'exports.resources_csv.get_field_data',
+    'exports.resources.csv.get_field_data',
     function (Event $event) {
         $params = $event->getParams();
 

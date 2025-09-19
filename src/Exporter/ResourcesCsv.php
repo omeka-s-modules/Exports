@@ -151,7 +151,7 @@ class ResourcesCsv
 
         // Next, let modules return CSV field data.
         $fieldData = new ArrayObject;
-        $event = new Event('exports.resources_csv.get_field_data', $this, [
+        $event = new Event('exports.resources.csv.get_field_data', $this, [
             'k' => $k, // The JSON-LD key
             'v' => $v,  // The JSON-LD value
             'export' => $export, // The export respresentation
