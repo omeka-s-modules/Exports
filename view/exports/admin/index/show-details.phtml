@@ -1,4 +1,5 @@
 <?php
+$exporter = $export->exporter();
 $job = $export->job();
 $owner = $export->owner();
 ?>
@@ -12,7 +13,7 @@ $owner = $export->owner();
 
 <div class="meta-group">
     <h4><?php echo $this->translate('Exporter'); ?></h4>
-    <div class="value"><?php echo $export->exporterLabel(); ?></div>
+    <div class="value"><?php echo $exporter->getLabel(); ?></div>
 </div>
 
 <div class="meta-group">

@@ -58,10 +58,10 @@ class ExportRepresentation extends AbstractEntityRepresentation
         return $this->resource->getExporterName();
     }
 
-    public function exporterLabel()
+    public function exporter()
     {
         $exporterManager = $this->getServiceLocator()->get('Exports\ExporterManager');
-        return $exporterManager->get($this->resource->getExporterName())->getLabel();
+        return $exporterManager->get($this->resource->getExporterName());
     }
 
     public function name()

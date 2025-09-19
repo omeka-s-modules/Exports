@@ -1,4 +1,5 @@
 <?php
+use Exports\Exporter\Unknown;
 use Exports\Module;
 
 $pathIsValid = Module::exportsDirectoryPathIsValid($this->setting('exports_directory_path'));
@@ -50,6 +51,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
     <tbody>
     <?php foreach ($exports as $export): ?>
     <?php
+    $exporter = $export->exporter();
     $job = $export->job();
     $owner = $export->owner();
     $reExportUrl = $this->url(
@@ -69,7 +71,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
                         'title' => $this->translate('Download'),
                     ]); ?></li>
                     <?php endif; ?>
-                    <?php if ($canCreate): ?>
+                    <?php if ($canCreate && !($exporter instanceof Unknown)): ?>
                     <li><?php echo $this->hyperlink('', $reExportUrl, [
                         'class' => 'far fa-copy',
                         'title' => $this->translate('Re-export'),
@@ -92,7 +94,7 @@ $this->htmlElement('body')->appendAttribute('class', 'exports browse');
                 </ul>
             </td>
             <td>
-                <?php echo $export->exporterLabel() ?>
+                <?php echo $exporter->getLabel() ?>
             </td>
             <td>
                 <?php if ($job): ?>
