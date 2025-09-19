@@ -5,8 +5,9 @@ use ArrayObject;
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\EventManager\Event;
-use Laminas\Form\Element;
+use Laminas\Form\Element as LaminasElement;
 use Laminas\Form\Fieldset;
+use Omeka\Form\Element as OmekaElement;
 
 class ResourcesCsv extends AbstractResourcesExporter
 {
@@ -23,7 +24,7 @@ class ResourcesCsv extends AbstractResourcesExporter
     public function addElements(Fieldset $fieldset): void
     {
         $fieldset->add([
-            'type' => Element\Select::class,
+            'type' => LaminasElement\Select::class,
             'name' => 'resource',
             'options' => [
                 'label' => 'Resource type', // @translate
@@ -37,7 +38,7 @@ class ResourcesCsv extends AbstractResourcesExporter
             ],
         ]);
         $fieldset->add([
-            'type' => Element\Text::class,
+            'type' => LaminasElement\Text::class,
             'name' => 'query',
             'options' => [
                 'label' => 'Resource query', // @translate
@@ -49,7 +50,46 @@ class ResourcesCsv extends AbstractResourcesExporter
             ],
         ]);
         $fieldset->add([
-            'type' => Element\Text::class,
+            'type' => OmekaElement\Query::class,
+            'name' => 'query_items',
+            'options' => [
+                'label' => 'Item query', // @translate
+                'info' => 'Enter the query used to filter the items to be exported. If no query is entered, all available items will be exported.', // @translate
+                'query_resource_type' => 'items',
+            ],
+            'attributes' => [
+                'id' => 'query_items',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => OmekaElement\Query::class,
+            'name' => 'query_item_sets',
+            'options' => [
+                'label' => 'Item set query', // @translate
+                'info' => 'Enter the query used to filter the item sets to be exported. If no query is entered, all available item sets will be exported.', // @translate
+                'query_resource_type' => 'item_sets',
+            ],
+            'attributes' => [
+                'id' => 'query_item_sets',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => OmekaElement\Query::class,
+            'name' => 'query_media',
+            'options' => [
+                'label' => 'Media query', // @translate
+                'info' => 'Enter the query used to filter the media to be exported. If no query is entered, all available media will be exported.', // @translate
+                'query_resource_type' => 'media',
+            ],
+            'attributes' => [
+                'id' => 'query_media',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => LaminasElement\Text::class,
             'name' => 'multivalue_separator',
             'options' => [
                 'label' => 'Multivalue separator', // @translate
@@ -68,7 +108,20 @@ class ResourcesCsv extends AbstractResourcesExporter
         $job->setOriginalIdentityMap();
 
         $resourceType = $export->dataValue('resource');
-        parse_str($export->dataValue('query'), $resourceQuery);
+        switch ($resourceType) {
+            case 'items':
+                $query = $export->dataValue('query_items');
+                break;
+            case 'item_sets':
+                $query = $export->dataValue('query_item_sets');
+                break;
+            case 'media':
+                $query = $export->dataValue('query_media');
+                break;
+            default:
+                $query = $export->dataValue('query');
+        }
+        parse_str($query, $resourceQuery);
 
         // Get the resource IDs.
         $resourceIds = $this->getResourceIds($resourceType, $resourceQuery);

@@ -107,6 +107,7 @@ class IndexController extends AbstractActionController
 
         $view = new ViewModel;
         $view->setVariable('form', $form);
+        $view->setVariable('exporter', $exporter);
         return $view;
     }
 

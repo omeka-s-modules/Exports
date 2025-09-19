@@ -20,6 +20,18 @@ class ExportForm extends Form
         $exporterName = $this->getOption('exporter_name');
         $exporter = $this->exporterManager->get($exporterName);
 
+        $this->setAttribute('id', 'export-form');
+        $this->add([
+            'type' => Element\Hidden::class,
+            'name' => 'o-module-exports:exporter_name',
+            'options' => [
+                'label' => 'Exporter', // @translate
+            ],
+            'attributes' => [
+                'id' => 'o-module-exports:exporter_name',
+                'value' => $exporterName,
+            ],
+        ]);
         $this->add([
             'type' => Element\Text::class,
             'name' => 'exporter',
@@ -41,17 +53,6 @@ class ExportForm extends Form
             'attributes' => [
                 'id' => 'o:label',
                 'required' => true,
-            ],
-        ]);
-        $this->add([
-            'type' => Element\Hidden::class,
-            'name' => 'o-module-exports:exporter_name',
-            'options' => [
-                'label' => 'Exporter', // @translate
-            ],
-            'attributes' => [
-                'id' => 'o-module-exports:exporter_name',
-                'value' => $exporterName,
             ],
         ]);
         $this->add([

@@ -1,7 +1,7 @@
 <?php
 $this->headLink()->appendStylesheet($this->assetUrl('css/export-form.css', 'Exports'));
 $this->headScript()->appendFile($this->assetUrl('js/export-form.js', 'Exports'));
-
+$exporter->prepareForm($this);
 $form->prepare();
 ?>
 

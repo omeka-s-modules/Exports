@@ -2,6 +2,7 @@
 namespace Exports\Exporter;
 
 use Laminas\EventManager\EventManager;
+use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Api\Manager as ApiManager;
 use Omeka\Api\ResourceInterface;
 
@@ -15,6 +16,11 @@ abstract class AbstractResourcesExporter implements ExporterInterface
     {
         $this->apiManager = $apiManager;
         $this->eventManager = $eventManager;
+    }
+
+    public function prepareForm(PhpRenderer $view): void
+    {
+        $view->headScript()->appendFile($view->assetUrl('js/resources-exporter-form.js', 'Exports'));
     }
 
     /**
