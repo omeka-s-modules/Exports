@@ -2,37 +2,58 @@ $(function() {
 
     const form = $('form#export-form');
 
-    const fieldQuery = $('#query_field');
-    const fieldQueryItems = $('#query_items_field');
-    const fieldQueryItemSets = $('#query_item_sets_field');
-    const fieldQueryMedia = $('#query_media_field');
+    const queryField = $('#query_field');
+    const queryItemsField = $('#query_items_field');
+    const queryItemSetsField = $('#query_item_sets_field');
+    const queryMediaField = $('#query_media_field');
+    const formatMultivalueSeparatorField = $('#multivalue_separator_field');
 
-    const elementResource = $('select#resource');
+    const resourceSelect = $('select#resource');
+    const formatSelect = $('select#format');
 
-    const prepareFields = function() {
-        fieldQuery.hide();
-        fieldQueryItems.hide();
-        fieldQueryItemSets.hide();
-        fieldQueryMedia.hide();
-        switch (elementResource.val()) {
+    const prepareQueryFields = function() {
+        queryField.hide();
+        queryItemsField.hide();
+        queryItemSetsField.hide();
+        queryMediaField.hide();
+        switch (resourceSelect.val()) {
             case 'items':
-                fieldQueryItems.show();
+                queryItemsField.show();
                 break;
             case 'item_sets':
-                fieldQueryItemSets.show();
+                queryItemSetsField.show();
                 break;
             case 'media':
-                fieldQueryMedia.show();
+                queryMediaField.show();
                 break;
             default:
-                fieldQuery.show();
+                queryField.show();
         }
     };
 
-    prepareFields();
+    const prepareFormatFields = function() {
+        formatMultivalueSeparatorField.hide();
+        switch (formatSelect.val()) {
+            case 'csv':
+                formatMultivalueSeparatorField.show();
+                break;
+            case 'jsonld':
+                formatMultivalueSeparatorField.hide();
+                break;
+            default:
+                // do nothing
+        }
+    }
 
-    elementResource.on('change', function(e) {
-        prepareFields();
+    // Prepare query fields on load.
+    prepareQueryFields();
+    prepareFormatFields();
+
+    resourceSelect.on('change', function(e) {
+        prepareQueryFields();
+    });
+    formatSelect.on('change', function(e) {
+        prepareFormatFields();
     });
 
 });

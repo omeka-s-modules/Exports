@@ -4,6 +4,7 @@ namespace Exports\Exporter;
 use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\Form\Fieldset;
+use Laminas\View\Renderer\PhpRenderer;
 
 class Unknown implements ExporterInterface
 {
@@ -22,6 +23,10 @@ class Unknown implements ExporterInterface
     public function getDescription(): ?string
     {
         return null;
+    }
+
+    public function prepareForm(PhpRenderer $view): void
+    {
     }
 
     public function addElements(Fieldset $fieldset): void

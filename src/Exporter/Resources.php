@@ -1,0 +1,203 @@
+<?php
+namespace Exports\Exporter;
+
+use Exports\Api\Representation\ExportRepresentation;
+use Exports\Job\ExportJob;
+use Laminas\EventManager\EventManager;
+use Laminas\Form\Element as LaminasElement;
+use Laminas\Form\Fieldset;
+use Laminas\View\Renderer\PhpRenderer;
+use Omeka\Form\Element as OmekaElement;
+use Omeka\Api\Manager as ApiManager;
+use Omeka\Api\ResourceInterface;
+
+class Resources implements ExporterInterface
+{
+    protected $apiManager;
+
+    protected $eventManager;
+
+    public function __construct(ApiManager $apiManager, EventManager $eventManager)
+    {
+        $this->apiManager = $apiManager;
+        $this->eventManager = $eventManager;
+    }
+
+    public function getLabel(): string
+    {
+        return 'Resources'; // @translate
+    }
+
+    public function getDescription(): ?string
+    {
+        return 'Export a file containing data about selected resources (CSV or JSON-LD).'; // @translate
+    }
+
+    public function prepareForm(PhpRenderer $view): void
+    {
+        $view->headScript()->appendFile($view->assetUrl('js/resources-exporter-form.js', 'Exports'));
+    }
+
+    public function addElements(Fieldset $fieldset): void
+    {
+        // Get value options for the resource select element.
+        $resourceValueOptions = [];
+        $apiResources = $this->apiManager->search('api_resources')->getContent();
+        foreach ($apiResources as $apiResource) {
+            // The value_annotations resource does not implement the search or
+            // read API operations. Remove it as an export option. Annotations
+            // are available when exporting items, media, and item_sets.
+            if ('value_annotations' === $apiResource->id()) {
+                continue;
+            }
+            $resourceValueOptions[$apiResource->id()] = $apiResource->id();
+        }
+        asort($resourceValueOptions);
+
+        $fieldset->add([
+            'type' => LaminasElement\Select::class,
+            'name' => 'resource',
+            'options' => [
+                'label' => 'Resource type', // @translate
+                'info' => 'Select the type of resource to export.', // @translate
+                'empty_option' => 'Select a resource type', // @translate
+                'value_options' => $resourceValueOptions,
+            ],
+            'attributes' => [
+                'id' => 'resource',
+                'required' => true,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => LaminasElement\Text::class,
+            'name' => 'query',
+            'options' => [
+                'label' => 'Resource query', // @translate
+                'info' => 'Enter the query used to filter the resources to be exported. If no query is entered, all available resources will be exported.', // @translate
+            ],
+            'attributes' => [
+                'id' => 'query',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => OmekaElement\Query::class,
+            'name' => 'query_items',
+            'options' => [
+                'label' => 'Item query', // @translate
+                'info' => 'Configure the query used to filter the items to be exported. If no query is entered, all available items will be exported.', // @translate
+                'query_resource_type' => 'items',
+            ],
+            'attributes' => [
+                'id' => 'query_items',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => OmekaElement\Query::class,
+            'name' => 'query_item_sets',
+            'options' => [
+                'label' => 'Item set query', // @translate
+                'info' => 'Configure the query used to filter the item sets to be exported. If no query is entered, all available item sets will be exported.', // @translate
+                'query_resource_type' => 'item_sets',
+            ],
+            'attributes' => [
+                'id' => 'query_item_sets',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => OmekaElement\Query::class,
+            'name' => 'query_media',
+            'options' => [
+                'label' => 'Media query', // @translate
+                'info' => 'Configure the query used to filter the media to be exported. If no query is entered, all available media will be exported.', // @translate
+                'query_resource_type' => 'media',
+            ],
+            'attributes' => [
+                'id' => 'query_media',
+                'required' => false,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => LaminasElement\Select::class,
+            'name' => 'format',
+            'options' => [
+                'label' => 'Format', // @translate
+                'info' => 'Select the export format.', // @translate
+                'empty_option' => 'Select a format', // @translate
+                'value_options' => [
+                    'csv' => 'CSV',
+                    'jsonld' => 'JSON-LD',
+                ],
+            ],
+            'attributes' => [
+                'id' => 'format',
+                'required' => true,
+            ],
+        ]);
+        $fieldset->add([
+            'type' => LaminasElement\Text::class,
+            'name' => 'multivalue_separator',
+            'options' => [
+                'label' => 'Multivalue separator', // @translate
+                'info' => 'Enter the character to separate multiple values in a cell.', // @translate
+            ],
+            'attributes' => [
+                'id' => 'multivalue_separator',
+                'required' => true,
+                'value' => '|',
+            ],
+        ]);
+    }
+
+    public function export(ExportRepresentation $export, ExportJob $job): void
+    {
+        $job->setOriginalIdentityMap();
+
+        // Get the resource query.
+        $resourceType = $export->dataValue('resource');
+        switch ($resourceType) {
+            case 'items':
+                $query = $export->dataValue('query_items');
+                break;
+            case 'item_sets':
+                $query = $export->dataValue('query_item_sets');
+                break;
+            case 'media':
+                $query = $export->dataValue('query_media');
+                break;
+            default:
+                $query = $export->dataValue('query');
+        }
+        parse_str($query, $resourceQuery);
+
+        // Get the resource IDs.
+        $resourceIds = $this->apiManager->search(
+            $resourceType,
+            $resourceQuery,
+            ['returnScalar' => 'id']
+        )->getContent();
+        // Some API adapters don't implement the returnScalar request option and
+        // return Omeka\Api\ResourceInterface objects instead of scalar IDs. In
+        // that case, convert the objects to their corresponding scalar IDs.
+        $resourceIds = array_map(
+            fn ($resourceId) => ($resourceId instanceof ResourceInterface) ? $resourceId->getId() : $resourceId,
+            $resourceIds
+        );
+
+        // Do the export according to format.
+        switch ($export->dataValue('format')) {
+            case 'csv':
+                $resourcesCsv = new ResourcesCsv($this->apiManager, $this->eventManager);
+                $resourcesCsv->export($export, $job, $resourceIds);
+                break;
+            case 'jsonld':
+                $resourcesJsonLd = new ResourcesJsonLd($this->apiManager, $this->eventManager);
+                $resourcesJsonLd->export($export, $job, $resourceIds);
+                break;
+            default:
+                // @todo: throw exception
+        }
+    }
+}

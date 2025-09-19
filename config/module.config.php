@@ -7,8 +7,7 @@ return [
     'exports_module' => [
         'exporters' => [
             'factories' => [
-                'resources_csv' => Service\Exporter\ResourcesCsvFactory::class,
-                'resources_jsonld' => Service\Exporter\ResourcesJsonLdFactory::class,
+                'resources' => Service\Exporter\ResourcesFactory::class,
             ],
         ],
     ],
