@@ -56,7 +56,6 @@ The MyExporter class must implement `\Exports\Exporter\ExporterInterface`:
 ```php
 namespace MyModule\Exporter;
 
-use Exports\Api\Representation\ExportRepresentation;
 use Exports\Exporter\ExporterInterface;
 use Exports\Job\ExportJob;
 use Laminas\Form\Fieldset;
@@ -72,6 +71,10 @@ class MyExporter implements ExporterInterface
     {
         return 'Export text.'; // @translate
     }
+    public function prepareForm(PhpRenderer $view): void
+    {
+        $view->headScript()->appendFile($view->assetUrl('js/my-exporter-form.js', 'MyModule'));
+    }
     public function addElements(Fieldset $fieldset): void
     {
         $fieldset->add([
@@ -82,8 +85,9 @@ class MyExporter implements ExporterInterface
             ],
         ]);
     }
-    public function export(ExportRepresentation $export, ExportJob $job): void
+    public function export(ExportJob $job): void
     {
+        $export = $job->getExport();
         file_put_contents(
             sprintf('%s/%s.txt', $job->getExportDirectoryPath(), $export->name()),
             $export->dataValue('text')
@@ -91,6 +95,11 @@ class MyExporter implements ExporterInterface
     }
 }
 ```
+
+If your exporter requires configuration, add form elements to the configuration
+form using `ExporterInterface::addElements()`. If your configuration form needs
+styling or scripting, use `ExporterInterface::prepareForm()` to append the needed
+files.
 
 `ExporterInterface::export()` is where you do the actual export. Prior to calling
 this method, the export job will create a temporary directory where you should place
