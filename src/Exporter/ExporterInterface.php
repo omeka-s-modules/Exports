@@ -1,7 +1,6 @@
 <?php
 namespace Exports\Exporter;
 
-use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\Form\Fieldset;
 use Laminas\View\Renderer\PhpRenderer;
@@ -32,6 +31,11 @@ interface ExporterInterface
 
     /**
      * Do the export, placing export assets in the export directory.
+     *
+     * The export job will make an export directory and invoke this method. This
+     * method should do the export and place all assets into that directory. The
+     * export job will then ZIP up the export directory, copy the file to Omeka
+     * file storage, and delete any leftover server artifacts.
      */
-    public function export(ExportRepresentation $export, ExportJob $job): void;
+    public function export(ExportJob $job): void;
 }

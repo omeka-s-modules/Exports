@@ -151,8 +151,9 @@ class Resources implements ExporterInterface
         ]);
     }
 
-    public function export(ExportRepresentation $export, ExportJob $job): void
+    public function export(ExportJob $job): void
     {
+        $export = $job->getExport();
         $job->setOriginalIdentityMap();
 
         // Get the resource query.
@@ -189,15 +190,15 @@ class Resources implements ExporterInterface
         // Do the export according to format.
         switch ($export->dataValue('format')) {
             case 'csv':
-                $resourcesCsv = new ResourcesCsv($this->apiManager, $this->eventManager);
-                $resourcesCsv->export($export, $job, $resourceIds);
+                $resourcesCsv = new ResourcesCsv($this->apiManager, $this->eventManager, $job, $resourceIds);
+                $resourcesCsv->export();
                 break;
             case 'jsonld':
-                $resourcesJsonLd = new ResourcesJsonLd($this->apiManager, $this->eventManager);
-                $resourcesJsonLd->export($export, $job, $resourceIds);
+                $resourcesJsonLd = new ResourcesJsonLd($this->apiManager, $this->eventManager, $job, $resourceIds);
+                $resourcesJsonLd->export();
                 break;
             default:
-                // @todo: throw exception
+                throw new Exception\RuntimeException('Invalid export format.');
         }
     }
 }

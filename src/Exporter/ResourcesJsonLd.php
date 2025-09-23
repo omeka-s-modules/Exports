@@ -1,7 +1,6 @@
 <?php
 namespace Exports\Exporter;
 
-use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\EventManager\EventManager;
 use Omeka\Api\Manager as ApiManager;
@@ -9,17 +8,27 @@ use Omeka\Api\Manager as ApiManager;
 class ResourcesJsonLd
 {
     protected $apiManager;
-
     protected $eventManager;
+    protected $job;
+    protected $resourceIds;
 
-    public function __construct(ApiManager $apiManager, EventManager $eventManager)
-    {
+    public function __construct(
+        ApiManager $apiManager,
+        EventManager $eventManager,
+        ExportJob $job,
+        array $resourceIds
+    ) {
         $this->apiManager = $apiManager;
         $this->eventManager = $eventManager;
+        $this->job = $job;
+        $this->resourceIds = $resourceIds;
     }
 
-    public function export(ExportRepresentation $export, ExportJob $job, array $resourceIds): void
+    public function export(): void
     {
+        $job = $this->job;
+        $resourceIds = $this->resourceIds;
+        $export = $job->getExport();
         $resourceType = $export->dataValue('resource');
         $lastResourceId = end($resourceIds);
 

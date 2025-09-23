@@ -17,7 +17,7 @@ class ExportJob extends AbstractExportJob
         $this->makeDirectory('');
 
         // Delegate the export to the exporter.
-        $this->getExporter()->export($export, $this);
+        $this->getExporter()->export($this);
 
         // Cancel the export if the job was stopped.
         if (Job::STATUS_STOPPING === $this->job->getStatus()) {

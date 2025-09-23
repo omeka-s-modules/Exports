@@ -1,7 +1,6 @@
 <?php
 namespace Exports\Exporter;
 
-use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\Form\Fieldset;
 use Laminas\View\Renderer\PhpRenderer;
@@ -33,7 +32,7 @@ class Unknown implements ExporterInterface
     {
     }
 
-    public function export(ExportRepresentation $export, ExportJob $job): void
+    public function export(ExportJob $job): void
     {
     }
 }
