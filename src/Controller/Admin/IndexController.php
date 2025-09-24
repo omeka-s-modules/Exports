@@ -66,7 +66,7 @@ class IndexController extends AbstractActionController
             'exporter_name' => $exporterName,
         ]);
         $form->setData([
-            'o:label' => sprintf('%s - %s', $exporter->getLabel(), date('c')),
+            'o:label' => sprintf('%s - %s', $exporter->getLabel(), date('Y-m-d\TH:i:s')),
         ]);
 
         if ($this->params('id')) {

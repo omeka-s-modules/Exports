@@ -41,18 +41,36 @@ class Resources implements ExporterInterface
     public function addElements(Fieldset $fieldset): void
     {
         // Get value options for the resource select element.
-        $resourceValueOptions = [];
+        $resourceValueOptions = [
+            'primary_types' => [
+                'label' => 'Primary types', // @translate
+                'options' => [
+                    'items' => 'Items', // @translate
+                    'item_sets' => 'Item sets', // @translate
+                    'media' => 'Media', // @translate
+                ],
+            ],
+            'other_types' => [
+                'label' => 'Other types', // @translate
+                'options' => [],
+            ],
+        ];
         $apiResources = $this->apiManager->search('api_resources')->getContent();
         foreach ($apiResources as $apiResource) {
+            // Remove items, item_sets, and media as export options because they
+            // are prepended above.
+            if (in_array($apiResource->id(), ['items', 'item_sets', 'media'])) {
+                continue;
+            }
             // The value_annotations resource does not implement the search or
             // read API operations. Remove it as an export option. Annotations
             // are available when exporting items, media, and item_sets.
             if ('value_annotations' === $apiResource->id()) {
                 continue;
             }
-            $resourceValueOptions[$apiResource->id()] = $apiResource->id();
+            $resourceValueOptions['other_types']['options'][$apiResource->id()] = $apiResource->id();
         }
-        asort($resourceValueOptions);
+        asort($resourceValueOptions['other_types']['options']);
 
         $fieldset->add([
             'type' => LaminasElement\Select::class,
@@ -124,7 +142,7 @@ class Resources implements ExporterInterface
             'name' => 'format',
             'options' => [
                 'label' => 'Format', // @translate
-                'info' => 'Select the export format.', // @translate
+                'info' => 'Select the format of the export file.', // @translate
                 'empty_option' => 'Select a format', // @translate
                 'value_options' => [
                     'csv' => 'CSV',
