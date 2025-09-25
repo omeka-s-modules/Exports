@@ -11,6 +11,8 @@ class ResourcesFactory implements FactoryInterface
     {
         return new Resources(
             $services->get('Omeka\ApiManager'),
+            $services->get('Omeka\ApiAdapterManager'),
+            $services->get('Omeka\Acl'),
             $services->get('EventManager')
         );
     }

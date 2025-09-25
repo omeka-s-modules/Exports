@@ -8,18 +8,30 @@ use Laminas\Form\Element as LaminasElement;
 use Laminas\Form\Fieldset;
 use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Form\Element as OmekaElement;
+use Omeka\Api\Adapter\Manager as ApiAdapterManager;
 use Omeka\Api\Manager as ApiManager;
 use Omeka\Api\ResourceInterface;
+use Omeka\Permissions\Acl;
 
 class Resources implements ExporterInterface
 {
     protected $apiManager;
 
+    protected $apiAdapterManager;
+
+    protected $acl;
+
     protected $eventManager;
 
-    public function __construct(ApiManager $apiManager, EventManager $eventManager)
-    {
+    public function __construct(
+        ApiManager $apiManager,
+        ApiAdapterManager $apiAdapterManager,
+        Acl $acl,
+        EventManager $eventManager
+    ) {
         $this->apiManager = $apiManager;
+        $this->apiAdapterManager = $apiAdapterManager;
+        $this->acl = $acl;
         $this->eventManager = $eventManager;
     }
 
@@ -66,6 +78,13 @@ class Resources implements ExporterInterface
             // read API operations. Remove it as an export option. Annotations
             // are available when exporting items, media, and item_sets.
             if ('value_annotations' === $apiResource->id()) {
+                continue;
+            }
+            // Remove resources as export options that the current user does not
+            // have permission to search.
+            $resourceAdapter = $this->apiAdapterManager->get($apiResource->id());
+            $userIsAllowed = $this->acl->userIsAllowed(get_class($resourceAdapter), 'search');
+            if (!$userIsAllowed) {
                 continue;
             }
             $resourceValueOptions['other_types']['options'][$apiResource->id()] = $apiResource->id();
