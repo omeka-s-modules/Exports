@@ -1,7 +1,6 @@
 <?php
 namespace Exports\Exporter;
 
-use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\EventManager\EventManager;
 use Laminas\Form\Element as LaminasElement;

@@ -1,0 +1,234 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-25 13:58-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/Controller/Admin/IndexController.php:95
+msgid "Exporting. This may take a while."
+msgstr ""
+
+#: src/Controller/Admin/IndexController.php:97
+#: src/Controller/Admin/IndexController.php:147
+msgid "See this job for progress."
+msgstr ""
+
+#: src/Controller/Admin/IndexController.php:145
+msgid ""
+"Successfully deleted the export resource. Deleting export artifacts from the "
+"server."
+msgstr ""
+
+#: src/Controller/Admin/IndexController.php:151
+msgid ""
+"Successfully deleted the export resource. Could not delete export artifacts "
+"from the server."
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:13
+#: view/exports/admin/index/export.phtml:8
+#: view/exports/admin/index/set-exporter.phtml:4
+msgid "Exports"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:17
+#: view/exports/admin/index/export.phtml:8
+msgid "Create an export"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:25
+msgid "Date created"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:33
+#: view/exports/admin/index/browse.phtml:45
+#: view/exports/admin/index/show-details.phtml:15
+msgid "Exporter"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:71
+#: view/exports/admin/index/show-details.phtml:54
+msgid "Download"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:77
+msgid "Re-export"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:126
+#, php-format
+msgid "No exports found. %s"
+msgstr ""
+
+#: view/exports/admin/index/browse.phtml:127
+msgid "Create a new export."
+msgstr ""
+
+#: view/exports/admin/index/export.phtml:14
+msgid "Begin export"
+msgstr ""
+
+#: view/exports/admin/index/set-exporter.phtml:4
+msgid "Create export"
+msgstr ""
+
+#: view/exports/admin/index/set-exporter.phtml:14
+msgid "What would you like to export?"
+msgstr ""
+
+#: view/exports/admin/index/show-details.phtml:20
+msgid "Export job"
+msgstr ""
+
+#: view/exports/admin/index/show-details.phtml:25
+#, php-format
+msgid "Status: %s [%s]"
+msgstr ""
+
+#: view/exports/admin/index/show-details.phtml:29
+msgid "no log"
+msgstr ""
+
+#: view/exports/admin/index/show-details.phtml:35
+#, php-format
+msgid "Started: %s"
+msgstr ""
+
+#: view/exports/admin/index/show-details.phtml:36
+#, php-format
+msgid "Ended: %s"
+msgstr ""
+
+#: view/exports/admin/index/show-details.phtml:60
+msgid "Data"
+msgstr ""
+
+#: src/Api/Adapter/ExportAdapter.php:45
+msgid "exporter name must be a string"
+msgstr ""
+
+#: src/Api/Adapter/ExportAdapter.php:49
+msgid "export_data must be an array"
+msgstr ""
+
+#: src/Api/Adapter/ExportAdapter.php:73
+msgid "An export must have an export name"
+msgstr ""
+
+#: src/Api/Adapter/ExportAdapter.php:76
+msgid "An export must have a label"
+msgstr ""
+
+#: src/Controller/Admin/IndexController.php:43
+msgid "Configure your export below."
+msgstr ""
+
+#: src/Controller/Admin/IndexController.php:122
+msgid "export"
+msgstr ""
+
+#: src/Form/ModuleConfigForm.php:17
+msgid "Exports directory path"
+msgstr ""
+
+#: src/Form/ModuleConfigForm.php:18
+msgid ""
+"Enter the path to the directory where your exports will be built. The path "
+"must exist and be writable by the web server."
+msgstr ""
+
+#: src/Form/ModuleConfigForm.php:37
+msgid ""
+"Invalid exports directory path. The path must exist and be writable by the "
+"web server."
+msgstr ""
+
+#: src/Exporter/Resources.php:44
+msgid ""
+"Export a file containing data about selected resources (CSV or JSON-LD)."
+msgstr ""
+
+#: src/Exporter/Resources.php:57
+msgid "Primary types"
+msgstr ""
+
+#: src/Exporter/Resources.php:65
+msgid "Other types"
+msgstr ""
+
+#: src/Exporter/Resources.php:98
+msgid "Select the type of resource to export."
+msgstr ""
+
+#: src/Exporter/Resources.php:99
+msgid "Select a resource type"
+msgstr ""
+
+#: src/Exporter/Resources.php:111
+msgid "Resource query"
+msgstr ""
+
+#: src/Exporter/Resources.php:112
+msgid ""
+"Enter the query used to filter the resources to be exported. If no query is "
+"entered, all available resources will be exported."
+msgstr ""
+
+#: src/Exporter/Resources.php:123
+msgid "Item query"
+msgstr ""
+
+#: src/Exporter/Resources.php:124
+msgid ""
+"Configure the query used to filter the items to be exported. If no query is "
+"entered, all available items will be exported."
+msgstr ""
+
+#: src/Exporter/Resources.php:136
+msgid "Item set query"
+msgstr ""
+
+#: src/Exporter/Resources.php:137
+msgid ""
+"Configure the query used to filter the item sets to be exported. If no query "
+"is entered, all available item sets will be exported."
+msgstr ""
+
+#: src/Exporter/Resources.php:149
+msgid "Media query"
+msgstr ""
+
+#: src/Exporter/Resources.php:150
+msgid ""
+"Configure the query used to filter the media to be exported. If no query is "
+"entered, all available media will be exported."
+msgstr ""
+
+#: src/Exporter/Resources.php:163
+msgid "Select the format of the export file."
+msgstr ""
+
+#: src/Exporter/Resources.php:164
+msgid "Select a format"
+msgstr ""
+
+#: src/Exporter/Resources.php:179
+msgid "Multivalue separator"
+msgstr ""
+
+#: src/Exporter/Resources.php:180
+msgid "Enter the character to separate multiple values in a cell."
+msgstr ""
