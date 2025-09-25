@@ -2,11 +2,11 @@ $(function() {
 
     const form = $('form#export-form');
 
-    const queryField = $('#query_field');
-    const queryItemsField = $('#query_items_field');
-    const queryItemSetsField = $('#query_item_sets_field');
-    const queryMediaField = $('#query_media_field');
-    const formatMultivalueSeparatorField = $('#multivalue_separator_field');
+    const queryField = $('input#query').closest('.field');
+    const queryItemsField = $('input#query_items').closest('.field');
+    const queryItemSetsField = $('input#query_item_sets').closest('.field');
+    const queryMediaField = $('input#query_media').closest('.field');
+    const formatMultivalueSeparatorField = $('input#multivalue_separator').closest('.field');
 
     const resourceSelect = $('select#resource');
     const formatSelect = $('select#format');
