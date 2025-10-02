@@ -173,6 +173,22 @@ class Resources implements ExporterInterface
             ],
         ]);
         $fieldset->add([
+            'type' => LaminasElement\Select::class,
+            'name' => 'reference_by',
+            'options' => [
+                'label' => 'Reference by', // @translate
+                'info' => 'Select whether to reference internal resources by URL or by ID.', // @translate
+                'value_options' => [
+                    'url' => 'URL',
+                    'id' => 'ID',
+                ],
+            ],
+            'attributes' => [
+                'id' => 'reference_by',
+                'required' => true,
+            ],
+        ]);
+        $fieldset->add([
             'type' => LaminasElement\Text::class,
             'name' => 'multivalue_separator',
             'options' => [

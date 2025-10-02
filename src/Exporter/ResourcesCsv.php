@@ -105,9 +105,10 @@ class ResourcesCsv
     public function getFieldData(string $k, $v, ExportRepresentation $export): ?array
     {
         $multivalueSeparator = $export->dataValue('multivalue_separator');
+        $referenceById = ('id' === $export->dataValue('reference_by'));
 
         // First, skip unneeded and empty fields.
-        if (in_array($k, ['@context', '@id'])) {
+        if (in_array($k, ['@context'])) {
             return null;
         }
         if (is_null($v)) {
@@ -121,6 +122,10 @@ class ResourcesCsv
         }
 
         // Next, handle specific fields by key.
+        if ('@id' === $k) {
+            // Only include @id if configured to reference resources by URL.
+            return $referenceById ? null : [[$k, $v]];
+        }
         if ('@type' === $k) {
             return [[$k, is_array($v) ? implode($multivalueSeparator, $v) : $v]];
         }
@@ -134,10 +139,10 @@ class ResourcesCsv
 
         // Next, handle fields by heuristics.
         if ($this->isInternalLink($v)) {
-            return [[$k, $v['o:id']]];
+            return [[$k, ($referenceById ? $v['o:id'] : $v['@id'])]];
         }
         if (is_array($v) && 0 < count($v) && $this->isInternalLink(reset($v))) {
-            return [[$k, implode($multivalueSeparator, array_map(fn ($link) => $link['o:id'], $v))]];
+            return [[$k, implode($multivalueSeparator, array_map(fn ($link) => ($referenceById ? $link['o:id'] : $link['@id']), $v))]];
         }
         if ($this->isDate($v)) {
             return [[$k, $v['@value']]];
@@ -237,7 +242,8 @@ class ResourcesCsv
             $valueData[] = [$headerSuffix, $v['@value']];
         } elseif (isset($v['value_resource_id'])) {
             $headerSuffix = 'resource';
-            $valueData[] = [$headerSuffix, $v['value_resource_id']];
+            $referenceById = ('id' === $export->dataValue('reference_by'));
+            $valueData[] = [$headerSuffix, ($referenceById ? $v['value_resource_id'] : $v['@id'])];
         } elseif (isset($v['@id'])) {
             $headerSuffix = 'uri';
             $valueData[] = [$headerSuffix, $v['@id']];

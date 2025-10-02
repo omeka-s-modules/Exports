@@ -6,7 +6,8 @@ $(function() {
     const queryItemsField = $('input#query_items').closest('.field');
     const queryItemSetsField = $('input#query_item_sets').closest('.field');
     const queryMediaField = $('input#query_media').closest('.field');
-    const formatMultivalueSeparatorField = $('input#multivalue_separator').closest('.field');
+    const multivalueSeparatorField = $('input#multivalue_separator').closest('.field');
+    const referenceBySelect = $('select#reference_by').closest('.field');
 
     const resourceSelect = $('select#resource');
     const formatSelect = $('select#format');
@@ -32,13 +33,16 @@ $(function() {
     };
 
     const prepareFormatFields = function() {
-        formatMultivalueSeparatorField.hide();
+        multivalueSeparatorField.hide();
+        referenceBySelect.hide();
         switch (formatSelect.val()) {
             case 'csv':
-                formatMultivalueSeparatorField.show();
+                multivalueSeparatorField.show();
+                referenceBySelect.show();
                 break;
             case 'jsonld':
-                formatMultivalueSeparatorField.hide();
+                multivalueSeparatorField.hide();
+                referenceBySelect.hide();
                 break;
             default:
                 // do nothing
