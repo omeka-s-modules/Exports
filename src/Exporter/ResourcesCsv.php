@@ -49,7 +49,7 @@ class ResourcesCsv
                 $resource = $this->apiManager->read($resourceType, $resourceId)->getContent();
                 $resourceJson = json_decode(json_encode($resource), true);
                 foreach ($resourceJson as $k => $v) {
-                    $fieldData = $this->getFieldData($k, $v, $export);
+                    $fieldData = $this->getFieldData($k, $v);
                     if (is_array($fieldData)) {
                         foreach ($fieldData as $data) {
                             $headerRow[$data[0]] = $data[0];
@@ -77,7 +77,7 @@ class ResourcesCsv
                 $resourceJson = json_decode(json_encode($resource), true);
                 $resourceRow = $rowTemplate;
                 foreach ($resourceJson as $k => $v) {
-                    $fieldData = $this->getFieldData($k, $v, $export);
+                    $fieldData = $this->getFieldData($k, $v);
                     if (is_array($fieldData)) {
                         foreach ($fieldData as $data) {
                             if (array_key_exists($data[0], $resourceRow)) {
@@ -102,8 +102,9 @@ class ResourcesCsv
      * Determines whether to process the key-value pair and returns an array of
      * corresponding CSV header-field pairs.
      */
-    public function getFieldData(string $k, $v, ExportRepresentation $export): ?array
+    public function getFieldData(string $k, $v): ?array
     {
+        $export = $this->job->getExport();
         $multivalueSeparator = $export->dataValue('multivalue_separator');
         $referenceById = ('id' === $export->dataValue('reference_by'));
 
@@ -150,7 +151,7 @@ class ResourcesCsv
         if ($this->isPropertyValues($v)) {
             $fieldData = [];
             foreach ($v as $index => $value) {
-                $valueData = $this->getValueData($index, $value, $export);
+                $valueData = $this->getValueData($index, $value);
                 if (is_array($valueData)) {
                     foreach ($valueData as $value) {
                         $fieldData[sprintf('%s:%s', $k, $value[0])][] = $value[1];
@@ -231,11 +232,12 @@ class ResourcesCsv
      *
      * @param ?int $index The index of the property value in the JSON-LD property values array
      * @param array $v An individual JSON-LD property value
-     * @param ExportRepresentation $export The export representation
      * @return ?array An array of CSV header_suffix-value pairs
      */
-    public function getValueData(?int $index, array $v, ExportRepresentation $export): ?array
+    public function getValueData(?int $index, array $v): ?array
     {
+        $export = $this->job->getExport();
+
         $valueData = [];
         if (isset($v['@value'])) {
             $headerSuffix = 'literal';
@@ -258,7 +260,7 @@ class ResourcesCsv
             foreach ($v['@annotation'] as $term => $annotationValues) {
                 if ($this->isPropertyValues($annotationValues)) {
                     foreach ($annotationValues as $annotationValue) {
-                        $annotationValueData = $this->getValueData(null, $annotationValue, $export);
+                        $annotationValueData = $this->getValueData(null, $annotationValue);
                         if (is_array($annotationValueData)) {
                             // The annotation's header suffix is a union of the
                             // value's header suffix, the index of JSON-LD value,
