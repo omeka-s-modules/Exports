@@ -15,7 +15,7 @@ class ModuleConfigForm extends Form
             'name' => 'exports_directory_path',
             'options' => [
                 'label' => 'Exports directory path', // @translate
-                'info' => 'Enter the path to the directory where your exports will be built. The path must exist and be writable by the web server.', // @translate
+                'info' => 'Enter the path to the temporary directory where your exports will be built. The path must exist and be writable by the web server.', // @translate
             ],
             'attributes' => [
                 'id' => 'exports_directory_path',
