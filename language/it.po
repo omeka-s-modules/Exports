@@ -2,147 +2,155 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
+# Translators:
+# Giorgio Comai <g@giorgiocomai.eu>, 2025
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-05 16:21-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2025-09-25 17:58+0000\n"
+"Last-Translator: Giorgio Comai <g@giorgiocomai.eu>, 2025\n"
+"Language-Team: Italian (https://app.transifex.com/omeka/teams/14184/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: src/Controller/Admin/IndexController.php:95
 msgid "Exporting. This may take a while."
-msgstr ""
+msgstr "Esportazione in corso. Potrebbe volerci un po' di tempo."
 
 #: src/Controller/Admin/IndexController.php:97
 #: src/Controller/Admin/IndexController.php:147
 msgid "See this job for progress."
-msgstr ""
+msgstr "Vedi questo lavoro per l'avanzamento."
 
 #: src/Controller/Admin/IndexController.php:145
 msgid ""
-"Successfully deleted the export resource. Deleting export artifacts from the "
-"server."
+"Successfully deleted the export resource. Deleting export artifacts from the"
+" server."
 msgstr ""
+"Risorsa dell'esportazione eliminata con successo. Eliminazione degli "
+"artefatti dal server in corso."
 
 #: src/Controller/Admin/IndexController.php:151
 msgid ""
 "Successfully deleted the export resource. Could not delete export artifacts "
 "from the server."
 msgstr ""
+"Risorsa dell'esportazione eliminata con successo. L'eliminazione degli "
+"artefatti dal server non è stata possibile."
 
 #: view/exports/admin/index/browse.phtml:13
 #: view/exports/admin/index/export.phtml:8
 #: view/exports/admin/index/set-exporter.phtml:4
 msgid "Exports"
-msgstr ""
+msgstr "Esportazioni"
 
 #: view/exports/admin/index/browse.phtml:17
 #: view/exports/admin/index/export.phtml:8
 msgid "Create an export"
-msgstr ""
+msgstr "Crea un'esportazione"
 
 #: view/exports/admin/index/browse.phtml:25
 msgid "Date created"
-msgstr ""
+msgstr "Data di creazione"
 
 #: view/exports/admin/index/browse.phtml:33
 #: view/exports/admin/index/browse.phtml:45
 #: view/exports/admin/index/show-details.phtml:10
 msgid "Exporter"
-msgstr ""
+msgstr "Esportatore"
 
 #: view/exports/admin/index/browse.phtml:71
 #: view/exports/admin/index/show-details.phtml:49
 msgid "Download"
-msgstr ""
+msgstr "Scarica"
 
 #: view/exports/admin/index/browse.phtml:77
 msgid "Re-export"
-msgstr ""
+msgstr "Ri-esporta"
 
 #: view/exports/admin/index/browse.phtml:126
 #, php-format
 msgid "No exports found. %s"
-msgstr ""
+msgstr "Nessuna esportazione trovata. %s"
 
 #: view/exports/admin/index/browse.phtml:127
 msgid "Create a new export."
-msgstr ""
+msgstr "Crea una nuova esportazione."
 
 #: view/exports/admin/index/export.phtml:14
 msgid "Begin export"
-msgstr ""
+msgstr "Inizia l'esportazione"
 
 #: view/exports/admin/index/set-exporter.phtml:4
 msgid "Create export"
-msgstr ""
+msgstr "Crea esportazione"
 
 #: view/exports/admin/index/set-exporter.phtml:14
 msgid "What would you like to export?"
-msgstr ""
+msgstr "Cosa vorresti esportare?"
 
 #: view/exports/admin/index/show-details.phtml:15
 msgid "Export job"
-msgstr ""
+msgstr "Lavoro di esportazione"
 
 #: view/exports/admin/index/show-details.phtml:20
 #, php-format
 msgid "Status: %s [%s]"
-msgstr ""
+msgstr "Stato: %s [%s]"
 
 #: view/exports/admin/index/show-details.phtml:24
 msgid "no log"
-msgstr ""
+msgstr "nessun log"
 
 #: view/exports/admin/index/show-details.phtml:30
 #, php-format
 msgid "Started: %s"
-msgstr ""
+msgstr "Iniziato: %s"
 
 #: view/exports/admin/index/show-details.phtml:31
 #, php-format
 msgid "Ended: %s"
-msgstr ""
+msgstr "Completato: %s"
 
 #: view/exports/admin/index/show-details.phtml:55
 msgid "Data"
-msgstr ""
+msgstr "Dati"
 
 #: src/Api/Adapter/ExportAdapter.php:45
 msgid "exporter name must be a string"
-msgstr ""
+msgstr "esportatore deve essere una stringa di testo"
 
 #: src/Api/Adapter/ExportAdapter.php:49
 msgid "export_data must be an array"
-msgstr ""
+msgstr "export_data deve essere un array"
 
 #: src/Api/Adapter/ExportAdapter.php:73
 msgid "An export must have an export name"
-msgstr ""
+msgstr "Un'esportazione deve avere un nome di esportazione"
 
 #: src/Api/Adapter/ExportAdapter.php:76
 msgid "An export must have a label"
-msgstr ""
+msgstr "Un'esportazione deve avere un'etichetta"
 
 #: src/Controller/Admin/IndexController.php:43
 msgid "Configure your export below."
-msgstr ""
+msgstr "Configura la tua esportazione qui sotto"
 
 #: src/Controller/Admin/IndexController.php:122
 msgid "export"
-msgstr ""
+msgstr "esporta"
 
 #: src/Form/ModuleConfigForm.php:17
 msgid "Exports directory path"
-msgstr ""
+msgstr "Percorso della cartella delle esportazioni"
 
 #: src/Form/ModuleConfigForm.php:18
 msgid ""
@@ -155,75 +163,87 @@ msgid ""
 "Invalid exports directory path. The path must exist and be writable by the "
 "web server."
 msgstr ""
+"Percorso della cartella per le esportazioni non valido. Il percorso deve "
+"essere già esistente e il web server deve poterci scrivere."
 
 #: src/Exporter/Resources.php:44
 msgid ""
 "Export a file containing data about selected resources (CSV or JSON-LD)."
 msgstr ""
+"Esporta un file contenente dati riguardo alle risorse selezionate (CSV o "
+"JSON-LD)"
 
 #: src/Exporter/Resources.php:57
 msgid "Primary types"
-msgstr ""
+msgstr "Tipi primari"
 
 #: src/Exporter/Resources.php:65
 msgid "Other types"
-msgstr ""
+msgstr "Altri tipi"
 
 #: src/Exporter/Resources.php:98
 msgid "Select the type of resource to export."
-msgstr ""
+msgstr "Seleziona il tipo di risorsa da esportare"
 
 #: src/Exporter/Resources.php:99
 msgid "Select a resource type"
-msgstr ""
+msgstr "Seleziona un tipo di risorsa"
 
 #: src/Exporter/Resources.php:111
 msgid "Resource query"
-msgstr ""
+msgstr "Query per risorse"
 
 #: src/Exporter/Resources.php:112
 msgid ""
 "Enter the query used to filter the resources to be exported. If no query is "
 "entered, all available resources will be exported."
 msgstr ""
+"Inserisci la query per filtrare le risorse da esportare. Se non si inserisce"
+" nessuna query, tutte le risorse disponibili saranno esportate."
 
 #: src/Exporter/Resources.php:123
 msgid "Item query"
-msgstr ""
+msgstr "Query sui contenuti"
 
 #: src/Exporter/Resources.php:124
 msgid ""
 "Configure the query used to filter the items to be exported. If no query is "
 "entered, all available items will be exported."
 msgstr ""
+"Configura la query per filtrare i contenuti da esportare. Se non si "
+"inserisce nessuna query, tutti i contenuti disponibili saranno esportati."
 
 #: src/Exporter/Resources.php:136
 msgid "Item set query"
-msgstr ""
+msgstr "Query per collezioni"
 
 #: src/Exporter/Resources.php:137
 msgid ""
-"Configure the query used to filter the item sets to be exported. If no query "
-"is entered, all available item sets will be exported."
+"Configure the query used to filter the item sets to be exported. If no query"
+" is entered, all available item sets will be exported."
 msgstr ""
+"Configura la query per filtrare le collezioni da esportare. Se non si "
+"inserisce nessuna query, tutte le collezioni disponibili saranno esportate."
 
 #: src/Exporter/Resources.php:149
 msgid "Media query"
-msgstr ""
+msgstr "Query per media"
 
 #: src/Exporter/Resources.php:150
 msgid ""
 "Configure the query used to filter the media to be exported. If no query is "
 "entered, all available media will be exported."
 msgstr ""
+"Configura la query per filtrare i media da esportare. Se non si inserisce "
+"nessuna query, tutti i media disponibili saranno esportati."
 
 #: src/Exporter/Resources.php:163
 msgid "Select the format of the export file."
-msgstr ""
+msgstr "Seleziona il formato per l'esportazione di file."
 
 #: src/Exporter/Resources.php:164
 msgid "Select a format"
-msgstr ""
+msgstr "Seleziona un formato"
 
 #: src/Exporter/Resources.php:179
 msgid "Reference by"
@@ -235,8 +255,9 @@ msgstr ""
 
 #: src/Exporter/Resources.php:195
 msgid "Multivalue separator"
-msgstr ""
+msgstr "Separatore per valori multipli"
 
 #: src/Exporter/Resources.php:196
 msgid "Enter the character to separate multiple values in a cell."
 msgstr ""
+"Inserisci il carattere utilizzato per separare valori multipli in una cella."

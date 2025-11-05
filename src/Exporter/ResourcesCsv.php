@@ -2,7 +2,6 @@
 namespace Exports\Exporter;
 
 use ArrayObject;
-use Exports\Api\Representation\ExportRepresentation;
 use Exports\Job\ExportJob;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\EventManager;
